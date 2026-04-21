@@ -293,6 +293,23 @@ export interface ApodData {
   error?: string;
 }
 
+export interface DiscoverSlide {
+  id: string;
+  source: string; // fx "NASA · APOD", "Wikipedia · Dagens billede", "Vidste du?"
+  title: string;
+  body: string;
+  imageUrl: string | null;
+  date: string | null;
+  link: string | null;
+  credit: string | null;
+}
+
+export interface DiscoverData {
+  slides: DiscoverSlide[];
+  fetchedAt: string;
+  error?: string;
+}
+
 export interface MoonData {
   phase: number;
   illumination: number;

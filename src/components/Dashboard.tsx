@@ -7,8 +7,6 @@ import { DiskWidget } from "./widgets/DiskWidget";
 import { WeatherWidget } from "./widgets/WeatherWidget";
 import { AirWidget } from "./widgets/AirWidget";
 import { PlexWidget } from "./widgets/PlexWidget";
-import { VpnWidget } from "./widgets/VpnWidget";
-import { NetworkWidget } from "./widgets/NetworkWidget";
 import { DevicesWidget } from "./widgets/DevicesWidget";
 import { NewsWidget } from "./widgets/NewsWidget";
 import { NzbWidget } from "./widgets/NzbWidget";
@@ -110,9 +108,7 @@ export function Dashboard() {
         <PlexWidget />
         <DevicesWidget />
 
-        {/* Row 8 · Network & downloads */}
-        <VpnWidget />
-        <NetworkWidget />
+        {/* Row 8 · Downloads */}
         <NzbWidget />
 
         {/* Row 9 · News */}

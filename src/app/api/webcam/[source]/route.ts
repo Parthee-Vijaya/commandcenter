@@ -3,12 +3,25 @@ import { NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 // Whitelist of allowed webcam sources — mapped to public JPG URLs.
-// Images are served from storebaelt.dk (Sund & Bælt) — public live feeds.
+// Storebaelt.dk-billederne er ikke rigtigt live (opdateres sjældent), så vi
+// bruger i stedet livetraffic.eu's feeds fra Sund & Bælt der opdateres cirka
+// hvert minut. Dækker broerne nær Sjælland/Øresund.
 const SOURCES: Record<string, string> = {
+  "oresund-ost": "https://livetraffic.eu/wp-content/uploads/webcams/oresundsbron-east.jpg",
+  "oresund-vest": "https://livetraffic.eu/wp-content/uploads/webcams/oresundsbron-west.jpg",
+  // Storebælts egen webcam — opdateres sjældent, men bevaret som fallback
   "storebaelt-bro":
     "https://storebaelt.dk/media/ctjpgsqu/webcambro.jpg?width=974&height=700&quality=75",
   "storebaelt-sprogo":
     "https://storebaelt.dk/media/eyyfkvbn/webcamsprogoe.jpg?width=974&height=700&quality=75",
+};
+
+// Referer til at passe soft-checks på upstream-serveren.
+const REFERERS: Record<string, string> = {
+  "oresund-ost": "https://livetraffic.eu/denmark/",
+  "oresund-vest": "https://livetraffic.eu/denmark/",
+  "storebaelt-bro": "https://storebaelt.dk/",
+  "storebaelt-sprogo": "https://storebaelt.dk/",
 };
 
 export async function GET(
@@ -22,13 +35,14 @@ export async function GET(
   }
 
   try {
-    // Append cache-buster so we always get a fresh frame.
-    const url = `${upstream}&_=${Date.now()}`;
+    // Append cache-buster så vi altid får et frisk frame.
+    const sep = upstream.includes("?") ? "&" : "?";
+    const url = `${upstream}${sep}_=${Date.now()}`;
     const res = await fetch(url, {
       signal: AbortSignal.timeout(6000),
       headers: {
-        // Some sites check referer; use their own origin to pass soft checks.
-        Referer: "https://storebaelt.dk/",
+        // Nogle upstream-servere tjekker Referer — send deres egen origin.
+        Referer: REFERERS[source] ?? "https://storebaelt.dk/",
         "User-Agent":
           "Mozilla/5.0 (Macintosh; Intel Mac OS X) AppleWebKit/537.36",
       },

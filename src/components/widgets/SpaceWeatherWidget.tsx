@@ -17,28 +17,138 @@ const AURORA_LABEL: Record<SpaceWeatherData["auroraChance"], string> = {
   severe: "Meget høj",
 };
 
-function KpBar({ kp }: { kp: number | null }) {
-  const bars = 9;
-  const filled = kp != null ? Math.min(bars, Math.round(kp)) : 0;
+/** Polar-projektion af den nordlige halvkugle med auroral oval der vokser
+ *  baseret på Kp-indeks. Jo højere Kp, jo længere syd når nordlyset. */
+function AuroraOval({ kp }: { kp: number | null }) {
+  const size = 180;
+  const cx = size / 2;
+  const cy = size / 2;
+  const rEarth = size / 2 - 6;
+  const k = kp ?? 0;
+
+  // Aurora-ovalets indre og ydre radius (relativt til pol).
+  // Kp=0 → band tæt på polen. Kp=9 → band helt ude mod 60° nord.
+  // Approksimation: indre = (Kp × 4) grader fra pol, ydre +6°
+  const innerDeg = Math.max(6, 18 - k * 1.8);
+  const outerDeg = innerDeg + 8;
+  // Konverter "grader fra pol" til radius (90° = kanten).
+  const degToR = (d: number) => (d / 90) * rEarth;
+  const rInner = degToR(innerDeg);
+  const rOuter = degToR(outerDeg);
+
+  // Aurora-intensitet
+  const intensity = Math.min(1, k / 7);
+  const auroraColor =
+    k < 3 ? "#22d3ee" : k < 5 ? "#10b981" : k < 7 ? "#a855f7" : "#f43f5e";
+
+  // Danmark sidder ca. på 56° N → 34° fra pol → lige i udkanten ved Kp~5
+  const dkRadius = degToR(34);
+
   return (
-    <div className="flex items-end gap-[2px] h-5">
-      {Array.from({ length: bars }).map((_, i) => {
-        const h = 30 + i * 8;
-        const active = i < filled;
-        const color =
-          i < 4
-            ? "bg-cyan-400/70"
-            : i < 7
-            ? "bg-amber-400/80"
-            : "bg-fuchsia-400/80";
+    <svg viewBox={`0 0 ${size} ${size}`} className="w-full max-w-[180px]">
+      <defs>
+        <radialGradient id="earthGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#0c4a6e" />
+          <stop offset="70%" stopColor="#0a1f2e" />
+          <stop offset="100%" stopColor="#050a10" />
+        </radialGradient>
+        <radialGradient
+          id="auroraGrad"
+          cx="50%"
+          cy="50%"
+          r="50%"
+          fx="50%"
+          fy="50%"
+        >
+          <stop offset="0%" stopColor={auroraColor} stopOpacity="0" />
+          <stop offset={`${(rInner / rEarth) * 100}%`} stopColor={auroraColor} stopOpacity="0" />
+          <stop offset={`${((rInner + rOuter) / 2 / rEarth) * 100}%`} stopColor={auroraColor} stopOpacity={0.3 + intensity * 0.5} />
+          <stop offset={`${(rOuter / rEarth) * 100}%`} stopColor={auroraColor} stopOpacity="0" />
+          <stop offset="100%" stopColor={auroraColor} stopOpacity="0" />
+        </radialGradient>
+      </defs>
+
+      {/* Jord (polar projektion) */}
+      <circle cx={cx} cy={cy} r={rEarth} fill="url(#earthGrad)" stroke="#00d9ff" strokeOpacity="0.3" strokeWidth="0.6" />
+
+      {/* Breddegrads-ringe (60°, 45°, 30°) */}
+      {[60, 45, 30].map((lat) => {
+        const r = degToR(90 - lat);
         return (
-          <div
-            key={i}
-            className={`w-[4px] rounded-sm transition-colors ${active ? color : "bg-neutral-800"}`}
-            style={{ height: `${h}%` }}
+          <circle
+            key={lat}
+            cx={cx}
+            cy={cy}
+            r={r}
+            fill="none"
+            stroke="#00d9ff"
+            strokeWidth="0.4"
+            strokeOpacity="0.15"
+            strokeDasharray="2 3"
           />
         );
       })}
+
+      {/* Længdegrads-linjer (hver 30°) */}
+      {Array.from({ length: 12 }).map((_, i) => {
+        const a = (i * 30 * Math.PI) / 180;
+        return (
+          <line
+            key={i}
+            x1={cx}
+            y1={cy}
+            x2={cx + Math.cos(a) * rEarth}
+            y2={cy + Math.sin(a) * rEarth}
+            stroke="#00d9ff"
+            strokeWidth="0.3"
+            strokeOpacity="0.1"
+          />
+        );
+      })}
+
+      {/* Auroral oval (ring) */}
+      <circle cx={cx} cy={cy} r={rEarth} fill="url(#auroraGrad)" opacity={0.7 + intensity * 0.3}>
+        <animate
+          attributeName="opacity"
+          values={`${0.5 + intensity * 0.2};${0.9 + intensity * 0.1};${0.5 + intensity * 0.2}`}
+          dur="3s"
+          repeatCount="indefinite"
+        />
+      </circle>
+
+      {/* Markér Danmark ca. 56°N (punkt i syd) */}
+      <circle cx={cx} cy={cy + dkRadius} r="2.5" fill="#fef3c7" />
+      <circle cx={cx} cy={cy + dkRadius} r="5" fill="none" stroke="#fef3c7" strokeWidth="0.6" opacity="0.5">
+        <animate attributeName="r" values="5;9;5" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.6;0;0.6" dur="2s" repeatCount="indefinite" />
+      </circle>
+      <text x={cx + 5} y={cy + dkRadius + 3} fontSize="7" fill="#fef3c7" fontFamily="monospace" opacity="0.8">DK</text>
+
+      {/* Nordpol i midten */}
+      <circle cx={cx} cy={cy} r="1.5" fill="#00d9ff" />
+
+      {/* Kompas */}
+      <text x={cx} y={10} textAnchor="middle" fontSize="7" fill="#00d9ff" opacity="0.5" fontFamily="monospace">0°</text>
+      <text x={size - 4} y={cy + 2} textAnchor="end" fontSize="7" fill="#00d9ff" opacity="0.5" fontFamily="monospace">90°</text>
+    </svg>
+  );
+}
+
+function KpBadge({ kp }: { kp: number | null }) {
+  const color =
+    kp == null
+      ? "text-neutral-500"
+      : kp < 4
+      ? "text-cyan-300"
+      : kp < 6
+      ? "text-amber-300"
+      : "text-fuchsia-400";
+  return (
+    <div>
+      <div className={`text-3xl font-light tabular-nums ${color}`}>
+        {kp?.toFixed(1) ?? "—"}
+      </div>
+      <div className="text-[9px] text-neutral-500 uppercase tracking-[0.2em]">Kp-indeks</div>
     </div>
   );
 }
@@ -47,34 +157,30 @@ export function SpaceWeatherWidget() {
   const { data } = usePoll<SpaceWeatherData>("/api/space", 5 * 60_000);
 
   return (
-    <Card title="Rumvejr" className="sm:col-span-1 lg:col-span-3">
-      <div className="space-y-3">
-        <div className="flex items-center gap-3">
-          <KpBar kp={data?.kpIndex ?? null} />
-          <div>
-            <div className="text-2xl font-light tabular-nums text-cyan-300">
-              {data?.kpIndex?.toFixed(1) ?? "—"}
-            </div>
-            <div className="text-[9px] text-neutral-500 uppercase tracking-[0.2em]">Kp-indeks</div>
-          </div>
-        </div>
+    <Card title="Rumvejr" className="sm:col-span-2 lg:col-span-3">
+      <div className="grid grid-cols-[auto_1fr] gap-3 items-center">
+        <AuroraOval kp={data?.kpIndex ?? null} />
 
-        <div className="pt-2 border-t border-cyan-400/10 space-y-1.5 text-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] text-neutral-500 uppercase tracking-wider">Aurora</span>
-            <span className={AURORA_COLOR[data?.auroraChance ?? "low"]}>
-              {AURORA_LABEL[data?.auroraChance ?? "low"]}
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] text-neutral-500 uppercase tracking-wider">Solvind</span>
-            <span className="font-mono tabular-nums text-neutral-300">
-              {data?.solarWindKmS != null ? `${data.solarWindKmS} km/s` : "—"}
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] text-neutral-500 uppercase tracking-wider">Røntgen</span>
-            <span className="font-mono text-neutral-300">{data?.xrayClass ?? "—"}</span>
+        <div className="min-w-0 space-y-2.5">
+          <KpBadge kp={data?.kpIndex ?? null} />
+
+          <div className="pt-2 border-t border-cyan-400/10 space-y-1.5 text-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-neutral-500 uppercase tracking-wider">Aurora</span>
+              <span className={AURORA_COLOR[data?.auroraChance ?? "low"]}>
+                {AURORA_LABEL[data?.auroraChance ?? "low"]}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-neutral-500 uppercase tracking-wider">Solvind</span>
+              <span className="font-mono tabular-nums text-neutral-300">
+                {data?.solarWindKmS != null ? `${data.solarWindKmS} km/s` : "—"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-neutral-500 uppercase tracking-wider">Røntgen</span>
+              <span className="font-mono text-neutral-300">{data?.xrayClass ?? "—"}</span>
+            </div>
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import si from "systeminformation";
 import { exec } from "child_process";
 import { promisify } from "util";
-import os from "os";
+import nodeOs from "node:os";
 import type { SystemData, ProcessInfo } from "@/lib/types";
 
 const execAsync = promisify(exec);
@@ -108,6 +108,6 @@ export async function collect(): Promise<SystemData> {
       topMem: topBy(procs.list, "mem"),
       total: procs.all,
     },
-    loadAvg: os.loadavg() as [number, number, number],
+    loadAvg: nodeOs.loadavg() as [number, number, number],
   };
 }
