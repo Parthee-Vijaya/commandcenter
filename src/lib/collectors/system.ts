@@ -55,7 +55,7 @@ function topBy(list: si.Systeminformation.ProcessesProcessData[], key: "cpu" | "
 }
 
 export async function collect(): Promise<SystemData> {
-  const [load, mem, fsSizes, cpuInfo, temp, net, battery, os, procs, power] = await Promise.all([
+  const [load, mem, fsSizes, cpuInfo, temp, net, battery, osInfo, procs, power] = await Promise.all([
     si.currentLoad(),
     si.mem(),
     si.fsSize(),
@@ -98,9 +98,9 @@ export async function collect(): Promise<SystemData> {
       charging: Boolean(battery?.isCharging),
     },
     host: {
-      hostname: os.hostname,
+      hostname: osInfo.hostname,
       uptime: Math.floor(si.time().uptime),
-      platform: `${os.distro} ${os.release}`.trim(),
+      platform: `${osInfo.distro} ${osInfo.release}`.trim(),
     },
     power,
     processes: {
