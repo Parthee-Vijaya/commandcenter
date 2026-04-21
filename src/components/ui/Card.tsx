@@ -28,7 +28,7 @@ export function Card({ children, className = "", title, subtitle, action, pulse,
   const borderAnim = pulse ? "holo-pulse" : "";
   return (
     <div
-      className={`group relative rounded-lg bg-[#0d1518] border border-cyan-400/15 p-5 animate-fade-in overflow-hidden transition-colors hover:border-cyan-400/45 ${borderAnim} ${className}`}
+      className={`group relative rounded-lg bg-[#0d1518] border border-cyan-400/15 p-3.5 sm:p-5 animate-fade-in overflow-hidden transition-colors hover:border-cyan-400/45 ${borderAnim} ${className}`}
       style={{
         boxShadow: pulse ? undefined : "0 0 0 1px rgba(0,217,255,0.04) inset, 0 4px 24px rgba(0,217,255,0.03)",
       }}

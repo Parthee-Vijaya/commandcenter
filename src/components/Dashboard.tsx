@@ -13,8 +13,8 @@ import { DevicesWidget } from "./widgets/DevicesWidget";
 import { NewsWidget } from "./widgets/NewsWidget";
 import { NzbWidget } from "./widgets/NzbWidget";
 import { EnergyWidget } from "./widgets/EnergyWidget";
-import { MoonWidget } from "./widgets/MoonWidget";
 import { FlightsWidget } from "./widgets/FlightsWidget";
+import { TrafficWidget } from "./widgets/TrafficWidget";
 import { SpaceWeatherWidget } from "./widgets/SpaceWeatherWidget";
 import { EarthquakesWidget } from "./widgets/EarthquakesWidget";
 import { LightningWidget } from "./widgets/LightningWidget";
@@ -60,17 +60,17 @@ export function Dashboard() {
     : "--:--:--";
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8">
-      <header className="max-w-7xl mx-auto mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+    <div className="min-h-screen p-3 sm:p-6 lg:p-8">
+      <header className="max-w-7xl mx-auto mb-5 sm:mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <h1 className="text-3xl sm:text-4xl font-thin tracking-[0.3em] text-cyan-100 holo-title-glow">
+          <h1 className="text-2xl sm:text-4xl font-thin tracking-[0.2em] sm:tracking-[0.3em] text-cyan-100 holo-title-glow">
             J.A.R.V.I.S.
           </h1>
-          <p className="text-cyan-400/60 text-xs mt-2 font-mono uppercase tracking-widest">
+          <p className="text-cyan-400/60 text-[10px] sm:text-xs mt-1.5 sm:mt-2 font-mono uppercase tracking-widest">
             <span className="capitalize">{dateStr}</span> · {timeStr}
           </p>
           <p
-            className={`text-xs text-neutral-400 italic mt-2 max-w-xl transition-opacity duration-400 ${
+            className={`text-[11px] sm:text-xs text-neutral-400 italic mt-2 max-w-xl transition-opacity duration-400 ${
               fading ? "opacity-0" : "opacity-100"
             }`}
           >
@@ -80,7 +80,7 @@ export function Dashboard() {
         <ClaudeHeaderStats />
       </header>
 
-      <main className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 auto-rows-min">
+      <main className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5 sm:gap-3 auto-rows-min">
         {/* Row 1 · System gauges */}
         <CpuWidget />
         <MemoryWidget />
@@ -89,9 +89,9 @@ export function Dashboard() {
         {/* Row 2 · APOD hero */}
         <ApodWidget />
 
-        {/* Row 3 · Celestial */}
+        {/* Row 3 · Vejr+Måne + Trafik */}
         <WeatherWidget />
-        <MoonWidget />
+        <TrafficWidget />
 
         {/* Row 4 · Ambient */}
         <EnergyWidget />
