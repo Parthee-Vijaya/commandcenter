@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import { usePoll } from "@/hooks/usePoll";
 import { Card } from "@/components/ui/Card";
 import type { TrafficData, TrafficIncident } from "@/lib/types";
@@ -11,78 +12,69 @@ const LAYERS = [
   { key: "current-roadwork", label: "Vejarbejde", color: "bg-neutral-400", text: "text-neutral-400" },
 ];
 
-function LAYER_LABEL(key: string): string {
+const CAMERAS = [
+  { id: "storebaelt-bro", label: "Storebælt · Østre pylon" },
+  { id: "storebaelt-sprogo", label: "Storebælt · Sprogø" },
+];
+
+function layerLabel(key: string): string {
   return LAYERS.find((l) => l.key === key)?.label ?? key;
 }
-
-function LAYER_TEXT(key: string): string {
+function layerText(key: string): string {
   return LAYERS.find((l) => l.key === key)?.text ?? "text-neutral-400";
 }
 
-// Super-simplified Denmark outline (Jylland + Fyn + Sjælland as stylized shapes).
-// Not a geo-accurate map — just a visual anchor to signal "DK traffic".
-function DenmarkMap({ severity }: { severity: number }) {
-  // severity 0..1 controls pulse intensity of the dot
-  const pulse = Math.min(1, severity);
-  const dotColor =
-    severity === 0
-      ? "#22c55e" // green – ok
-      : severity < 0.3
-      ? "#38bdf8" // sky
-      : severity < 0.7
-      ? "#f59e0b" // amber
-      : "#f43f5e"; // rose
+function Webcam({ source, label }: { source: string; label: string }) {
+  const [ts, setTs] = useState(() => Date.now());
+  const [failed, setFailed] = useState(false);
+
+  // Refresh the JPG every 30s.
+  useEffect(() => {
+    const id = setInterval(() => setTs(Date.now()), 30_000);
+    return () => clearInterval(id);
+  }, []);
 
   return (
-    <svg viewBox="0 0 120 70" className="w-full h-24" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <radialGradient id="dkGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor={dotColor} stopOpacity="0.5" />
-          <stop offset="100%" stopColor={dotColor} stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      {/* Jylland */}
-      <path
-        d="M35,8 Q28,6 25,14 Q22,22 25,32 Q23,40 26,48 Q30,58 38,62 Q44,64 48,58 Q52,54 50,46 Q54,38 50,30 Q52,22 48,16 Q44,10 35,8 Z"
-        fill="#0d1518"
-        stroke="#00d9ff"
-        strokeOpacity="0.3"
-        strokeWidth="0.7"
-      />
-      {/* Fyn */}
-      <ellipse cx="66" cy="40" rx="10" ry="7" fill="#0d1518" stroke="#00d9ff" strokeOpacity="0.3" strokeWidth="0.7" />
-      {/* Sjælland */}
-      <path
-        d="M82,26 Q88,24 96,28 Q102,34 100,42 Q96,50 88,50 Q82,48 80,42 Q78,32 82,26 Z"
-        fill="#0d1518"
-        stroke="#00d9ff"
-        strokeOpacity="0.3"
-        strokeWidth="0.7"
-      />
-      {/* Bornholm */}
-      <circle cx="112" cy="50" r="2.5" fill="#0d1518" stroke="#00d9ff" strokeOpacity="0.3" strokeWidth="0.5" />
-
-      {/* Activity glow + pulse dot somewhere central */}
-      {severity > 0 && (
-        <>
-          <circle cx="68" cy="38" r="18" fill="url(#dkGlow)">
-            <animate attributeName="r" values="12;22;12" dur="3s" repeatCount="indefinite" />
-          </circle>
-          <circle cx="68" cy="38" r="2" fill={dotColor}>
-            <animate attributeName="opacity" values="1;0.4;1" dur="1.5s" repeatCount="indefinite" />
-          </circle>
-        </>
+    <div className="relative rounded-md overflow-hidden border border-cyan-400/15 bg-neutral-900 group/cam">
+      {failed ? (
+        <div className="aspect-[974/350] flex items-center justify-center text-xs text-neutral-500">
+          Kamera ikke tilgængeligt
+        </div>
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={`/api/webcam/${source}?t=${ts}`}
+          alt={label}
+          className="w-full aspect-[974/350] object-cover transition-opacity duration-300"
+          onError={() => setFailed(true)}
+        />
       )}
-      {severity === 0 && <circle cx="68" cy="38" r="2" fill="#22c55e" opacity="0.8" />}
-    </svg>
+
+      {/* Overlay: location label + live dot */}
+      <div className="absolute top-2 left-2 right-2 flex items-center justify-between">
+        <span className="px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm text-[10px] font-mono text-cyan-100 tracking-wider">
+          {label}
+        </span>
+        <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-sm">
+          <span
+            className="w-1.5 h-1.5 rounded-full bg-rose-400 pulse-dot"
+            style={{ boxShadow: "0 0 6px #fb7185" }}
+          />
+          <span className="text-[9px] font-mono text-rose-200 uppercase tracking-wider">Live</span>
+        </span>
+      </div>
+
+      {/* Scan-line bar bottom */}
+      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" />
+    </div>
   );
 }
 
 function Row({ inc }: { inc: TrafficIncident }) {
   return (
     <div className="text-xs leading-snug py-0.5">
-      <span className={`font-mono text-[10px] mr-2 ${LAYER_TEXT(inc.layer)}`}>
-        {LAYER_LABEL(inc.layer)}
+      <span className={`font-mono text-[10px] mr-2 ${layerText(inc.layer)}`}>
+        {layerLabel(inc.layer)}
       </span>
       <span className="text-neutral-300">{inc.header}</span>
     </div>
@@ -91,43 +83,51 @@ function Row({ inc }: { inc: TrafficIncident }) {
 
 export function TrafficWidget() {
   const { data } = usePoll<TrafficData>("/api/traffic", 5 * 60_000);
+  const [camIdx, setCamIdx] = useState(0);
 
   const incidents = data?.incidents ?? [];
   const total = data?.total ?? 0;
 
-  // Count incidents by layer
   const counts: Record<string, number> = {};
   for (const inc of incidents) {
     counts[inc.layer] = (counts[inc.layer] ?? 0) + 1;
   }
   const barTotal = Math.max(1, incidents.length);
 
-  // Severity: roadblocks + queue get weight 1, others weight 0.5
-  const severity =
-    Math.min(
-      1,
-      ((counts["current-roadblocks"] ?? 0) * 1 +
-        (counts["current-blocking-roadwork"] ?? 0) * 0.8 +
-        (counts["current-queue"] ?? 0) * 0.6 +
-        (counts["current-other-traffic-announcements"] ?? 0) * 0.3) /
-        4
-    );
+  const cam = CAMERAS[camIdx];
 
   return (
     <Card
-      title="Trafik · DK"
+      title="Trafik · Storebælt"
       className="sm:col-span-2 lg:col-span-3"
       action={
         <span className="text-[10px] font-mono text-cyan-400/60">
-          {total} aktive
+          {total} aktive · DK
         </span>
       }
     >
-      <DenmarkMap severity={severity} />
+      <Webcam source={cam.id} label={cam.label} />
+
+      {/* Camera switcher */}
+      <div className="mt-2 flex items-center gap-1">
+        {CAMERAS.map((c, i) => (
+          <button
+            key={c.id}
+            onClick={() => setCamIdx(i)}
+            className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors ${
+              camIdx === i
+                ? "border-cyan-400/60 bg-cyan-400/10 text-cyan-200"
+                : "border-cyan-400/15 text-neutral-400 hover:border-cyan-400/40"
+            }`}
+          >
+            {c.label.replace("Storebælt · ", "")}
+          </button>
+        ))}
+      </div>
 
       {/* Stacked bar of incident categories */}
       {incidents.length > 0 && (
-        <div className="mt-2">
+        <div className="mt-3">
           <div className="w-full h-2 flex rounded-full overflow-hidden bg-neutral-800/60">
             {LAYERS.map((l) => {
               const n = counts[l.key] ?? 0;
