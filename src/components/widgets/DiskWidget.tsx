@@ -54,6 +54,7 @@ export function DiskWidget() {
 
   return (
     <Card
+      widget="status"
       title="Lagring"
       className="sm:col-span-2 lg:col-span-2"
       action={

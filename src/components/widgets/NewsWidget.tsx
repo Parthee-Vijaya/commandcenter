@@ -27,6 +27,7 @@ export function NewsWidget() {
 
   return (
     <Card
+      widget="news"
       title="Nyheder"
       className="sm:col-span-2 lg:col-span-6"
       action={

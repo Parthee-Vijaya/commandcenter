@@ -10,6 +10,8 @@ interface CardProps {
   pulse?: boolean;
   /** Hide the scan-line animation for cards that already have heavy motion (charts, heatmaps). */
   flat?: boolean;
+  /** Widget-kategori til multifarve-tema (cpu, memory, weather, flights, ...) */
+  widget?: string;
 }
 
 function Brackets() {
@@ -24,17 +26,19 @@ function Brackets() {
   );
 }
 
-export function Card({ children, className = "", title, subtitle, action, pulse, flat }: CardProps) {
+export function Card({ children, className = "", title, subtitle, action, pulse, flat, widget }: CardProps) {
   const borderAnim = pulse ? "holo-pulse" : "";
   return (
     <div
+      data-widget={widget}
       className={`group relative rounded-lg bg-[#0d1518] border border-cyan-400/15 p-3.5 sm:p-5 animate-fade-in overflow-hidden transition-colors hover:border-cyan-400/45 ${borderAnim} ${className}`}
       style={{
-        boxShadow: pulse ? undefined : "0 0 0 1px rgba(0,217,255,0.04) inset, 0 4px 24px rgba(0,217,255,0.03)",
+        boxShadow: pulse ? undefined : "0 0 0 1px rgba(var(--j-acc-rgb), 0.04) inset, 0 4px 24px rgba(var(--j-acc-rgb), 0.03)",
       }}
     >
       <Brackets />
-      {!flat && <div className="holo-scan-line" />}
+      {/* Scan-line fjernet — ingen animeret baggrund */}
+      {false && !flat && <div className="holo-scan-line" />}
       {(title || action) && (
         <div className="relative flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">

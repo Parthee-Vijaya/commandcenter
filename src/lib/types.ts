@@ -317,3 +317,71 @@ export interface MoonData {
   nextFullMoon: string;
   nextNewMoon: string;
 }
+
+export interface MarketAsset {
+  symbol: string;
+  name: string;
+  priceDkk: number;
+  change24h: number; // procent
+  change7d?: number;
+  unit?: string; // fx "oz", "tønde"
+  marketCapDkk?: number;
+  spark?: number[]; // sparkline values
+}
+
+export interface CurrencyRate {
+  code: string;
+  label: string;
+  perDkk: number; // hvor meget 1 DKK er værd i denne valuta
+  dkkPerUnit: number; // hvor meget 1 enhed koster i DKK
+  change24h?: number;
+}
+
+export interface MarketsData {
+  commodities: MarketAsset[];
+  currencies: CurrencyRate[];
+  fetchedAt: string;
+  error?: string;
+}
+
+export interface GithubEventItem {
+  type: string;
+  repo: string;
+  action?: string;
+  detail?: string;
+  createdAt: string;
+  url?: string;
+}
+
+export interface GithubContribDay {
+  date: string; // YYYY-MM-DD
+  count: number;
+}
+
+export interface GithubData {
+  user: {
+    login: string;
+    name: string | null;
+    publicRepos: number;
+    followers: number;
+    following: number;
+    avatarUrl: string;
+  } | null;
+  eventsLast7d: number;
+  commitsLast7d: number;
+  prsOpen: number;
+  starsTotal: number;
+  topRepos: Array<{
+    name: string;
+    description: string | null;
+    stars: number;
+    forks: number;
+    language: string | null;
+    pushedAt: string;
+    url: string;
+  }>;
+  events: GithubEventItem[];
+  contrib: GithubContribDay[]; // sidste 30 dage (day buckets fra events)
+  fetchedAt: string;
+  error?: string;
+}

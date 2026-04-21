@@ -23,12 +23,14 @@
   --color-accent-rose: #fb7185;
 }
 
+/* Theme variables — default values, ThemeProvider overrides via inline style on <html>. */
+:root {
+  --j-acc: #38bdf8;
+  --j-acc-rgb: 56, 189, 248;
+}
+
 html, body {
   background-color: var(--color-bg);
-  background-image:
-    linear-gradient(rgba(0, 217, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 217, 255, 0.03) 1px, transparent 1px);
-  background-size: 32px 32px;
   color: var(--color-text);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -45,8 +47,8 @@ body {
 
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(0, 217, 255, 0.2); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(0, 217, 255, 0.4); }
+::-webkit-scrollbar-thumb { background: rgba(var(--j-acc-rgb), 0.2); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(var(--j-acc-rgb), 0.4); }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 .animate-fade-in { animation: fadeIn 0.4s ease-out; }
@@ -66,7 +68,7 @@ body {
 .holo-scan-line {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 0%, rgba(0, 217, 255, 0.08) 50%, transparent 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(var(--j-acc-rgb), 0.08) 50%, transparent 100%);
   height: 40%;
   animation: holoScan 8s linear infinite;
   pointer-events: none;
@@ -74,13 +76,118 @@ body {
 }
 
 @keyframes holoPulseBorder {
-  0%, 100% { border-color: rgba(0, 217, 255, 0.15); box-shadow: 0 4px 24px rgba(0, 217, 255, 0.02); }
-  50% { border-color: rgba(0, 217, 255, 0.55); box-shadow: 0 0 24px rgba(0, 217, 255, 0.18); }
+  0%, 100% { border-color: rgba(var(--j-acc-rgb), 0.15); box-shadow: 0 4px 24px rgba(var(--j-acc-rgb), 0.02); }
+  50% { border-color: rgba(var(--j-acc-rgb), 0.55); box-shadow: 0 0 24px rgba(var(--j-acc-rgb), 0.18); }
 }
 .holo-pulse { animation: holoPulseBorder 4s ease-in-out infinite; }
 
 @keyframes titleGlow {
-  0%, 100% { text-shadow: 0 0 20px rgba(0, 217, 255, 0.3); }
-  50% { text-shadow: 0 0 32px rgba(0, 217, 255, 0.5); }
+  0%, 100% { text-shadow: 0 0 20px rgba(var(--j-acc-rgb), 0.3); }
+  50% { text-shadow: 0 0 32px rgba(var(--j-acc-rgb), 0.5); }
 }
 .holo-title-glow { animation: titleGlow 6s ease-in-out infinite; }
+
+/* ───────────────────────────────────────────────────────────────────
+   THEME OVERRIDES — single-accent mode
+   Omdirigerer alle Tailwind cyan-* klasser til --j-acc så valgt
+   accent-farve slår igennem alle widgets uden de skal ændres.
+   ─────────────────────────────────────────────────────────────────── */
+
+html[data-theme-mode="single"] .text-cyan-100,
+html[data-theme-mode="single"] .text-cyan-200,
+html[data-theme-mode="single"] .text-cyan-300,
+html[data-theme-mode="single"] .text-cyan-400 { color: var(--j-acc); }
+html[data-theme-mode="single"] .text-cyan-400\/50 { color: rgba(var(--j-acc-rgb), 0.5); }
+html[data-theme-mode="single"] .text-cyan-400\/60 { color: rgba(var(--j-acc-rgb), 0.6); }
+html[data-theme-mode="single"] .text-cyan-400\/70 { color: rgba(var(--j-acc-rgb), 0.7); }
+html[data-theme-mode="single"] .text-cyan-400\/80 { color: rgba(var(--j-acc-rgb), 0.8); }
+html[data-theme-mode="single"] .text-cyan-300\/80 { color: rgba(var(--j-acc-rgb), 0.8); }
+
+html[data-theme-mode="single"] .border-cyan-400\/10 { border-color: rgba(var(--j-acc-rgb), 0.10); }
+html[data-theme-mode="single"] .border-cyan-400\/15 { border-color: rgba(var(--j-acc-rgb), 0.15); }
+html[data-theme-mode="single"] .border-cyan-400\/20 { border-color: rgba(var(--j-acc-rgb), 0.20); }
+html[data-theme-mode="single"] .border-cyan-400\/25 { border-color: rgba(var(--j-acc-rgb), 0.25); }
+html[data-theme-mode="single"] .border-cyan-400\/30 { border-color: rgba(var(--j-acc-rgb), 0.30); }
+html[data-theme-mode="single"] .border-cyan-400\/45 { border-color: rgba(var(--j-acc-rgb), 0.45); }
+html[data-theme-mode="single"] .border-cyan-400\/50 { border-color: rgba(var(--j-acc-rgb), 0.50); }
+
+html[data-theme-mode="single"] .bg-cyan-400 { background-color: var(--j-acc); }
+html[data-theme-mode="single"] .bg-cyan-500\/5 { background-color: rgba(var(--j-acc-rgb), 0.05); }
+html[data-theme-mode="single"] .bg-cyan-400\/10 { background-color: rgba(var(--j-acc-rgb), 0.10); }
+html[data-theme-mode="single"] .bg-cyan-400\/20 { background-color: rgba(var(--j-acc-rgb), 0.20); }
+html[data-theme-mode="single"] .bg-cyan-400\/25 { background-color: rgba(var(--j-acc-rgb), 0.25); }
+
+html[data-theme-mode="single"] .hover\:border-cyan-400\/45:hover { border-color: rgba(var(--j-acc-rgb), 0.45); }
+html[data-theme-mode="single"] .hover\:text-cyan-300:hover { color: var(--j-acc); }
+
+/* ───────────────────────────────────────────────────────────────────
+   MULTI-MODE — Glass Aurora palette
+   Al primær tekst → hvid. Accent-farver varierer per widget-kategori
+   via widget-root data-attribut.
+   ─────────────────────────────────────────────────────────────────── */
+
+html[data-theme-mode="multi"] {
+  --j-acc: #ffffff;
+  --j-acc-rgb: 255, 255, 255;
+
+  --j-cpu:      #a78bfa; /* violet */
+  --j-cpu-rgb:  167, 139, 250;
+  --j-mem:      #67e8f9; /* cyan */
+  --j-mem-rgb:  103, 232, 249;
+  --j-status:   #34d399; /* emerald */
+  --j-status-rgb: 52, 211, 153;
+  --j-weather:  #fbbf24; /* amber */
+  --j-weather-rgb: 251, 191, 36;
+  --j-traffic:  #fb923c; /* orange */
+  --j-traffic-rgb: 251, 146, 60;
+  --j-energy:   #4ade80; /* lime-green */
+  --j-energy-rgb: 74, 222, 128;
+  --j-space:    #c084fc; /* purple */
+  --j-space-rgb: 192, 132, 252;
+  --j-flights:  #38bdf8; /* sky */
+  --j-flights-rgb: 56, 189, 248;
+  --j-quake:    #fb7185; /* rose */
+  --j-quake-rgb: 251, 113, 133;
+  --j-news:     #f0abfc; /* fuchsia-light */
+  --j-news-rgb: 240, 171, 252;
+  --j-apod:     #e879f9; /* fuchsia */
+  --j-apod-rgb: 232, 121, 249;
+  --j-plex:     #facc15; /* yellow */
+  --j-plex-rgb: 250, 204, 21;
+}
+
+/* I multi-mode: tekst → hvid, accent-farver pr widget via data-widget attribut. */
+html[data-theme-mode="multi"] .text-cyan-100,
+html[data-theme-mode="multi"] .text-cyan-200,
+html[data-theme-mode="multi"] .text-cyan-300,
+html[data-theme-mode="multi"] .text-cyan-400 { color: #ffffff; }
+html[data-theme-mode="multi"] .text-cyan-400\/50 { color: rgba(255,255,255,0.55); }
+html[data-theme-mode="multi"] .text-cyan-400\/60 { color: rgba(255,255,255,0.65); }
+html[data-theme-mode="multi"] .text-cyan-400\/70 { color: rgba(255,255,255,0.75); }
+html[data-theme-mode="multi"] .text-cyan-400\/80 { color: rgba(255,255,255,0.85); }
+
+/* Per-widget accent override — widget-roden sætter --j-acc til sin egen farve */
+html[data-theme-mode="multi"] [data-widget="cpu"]     { --j-acc: var(--j-cpu);     --j-acc-rgb: var(--j-cpu-rgb); }
+html[data-theme-mode="multi"] [data-widget="memory"]  { --j-acc: var(--j-mem);     --j-acc-rgb: var(--j-mem-rgb); }
+html[data-theme-mode="multi"] [data-widget="status"]  { --j-acc: var(--j-status);  --j-acc-rgb: var(--j-status-rgb); }
+html[data-theme-mode="multi"] [data-widget="weather"] { --j-acc: var(--j-weather); --j-acc-rgb: var(--j-weather-rgb); }
+html[data-theme-mode="multi"] [data-widget="traffic"] { --j-acc: var(--j-traffic); --j-acc-rgb: var(--j-traffic-rgb); }
+html[data-theme-mode="multi"] [data-widget="energy"]  { --j-acc: var(--j-energy);  --j-acc-rgb: var(--j-energy-rgb); }
+html[data-theme-mode="multi"] [data-widget="space"]   { --j-acc: var(--j-space);   --j-acc-rgb: var(--j-space-rgb); }
+html[data-theme-mode="multi"] [data-widget="flights"] { --j-acc: var(--j-flights); --j-acc-rgb: var(--j-flights-rgb); }
+html[data-theme-mode="multi"] [data-widget="quake"]   { --j-acc: var(--j-quake);   --j-acc-rgb: var(--j-quake-rgb); }
+html[data-theme-mode="multi"] [data-widget="news"]    { --j-acc: var(--j-news);    --j-acc-rgb: var(--j-news-rgb); }
+html[data-theme-mode="multi"] [data-widget="apod"]    { --j-acc: var(--j-apod);    --j-acc-rgb: var(--j-apod-rgb); }
+html[data-theme-mode="multi"] [data-widget="plex"]    { --j-acc: var(--j-plex);    --j-acc-rgb: var(--j-plex-rgb); }
+
+/* I multi-mode bliver cyan-border → per-widget accent, så rammer matcher */
+html[data-theme-mode="multi"] [data-widget] .border-cyan-400\/10 { border-color: rgba(var(--j-acc-rgb), 0.10); }
+html[data-theme-mode="multi"] [data-widget] .border-cyan-400\/15 { border-color: rgba(var(--j-acc-rgb), 0.20); }
+html[data-theme-mode="multi"] [data-widget] .border-cyan-400\/20 { border-color: rgba(var(--j-acc-rgb), 0.25); }
+html[data-theme-mode="multi"] [data-widget] .border-cyan-400\/25 { border-color: rgba(var(--j-acc-rgb), 0.30); }
+html[data-theme-mode="multi"] [data-widget] .border-cyan-400\/30 { border-color: rgba(var(--j-acc-rgb), 0.35); }
+html[data-theme-mode="multi"] [data-widget] .border-cyan-400\/45 { border-color: rgba(var(--j-acc-rgb), 0.50); }
+
+html[data-theme-mode="multi"] [data-widget] .bg-cyan-400 { background-color: var(--j-acc); }
+html[data-theme-mode="multi"] [data-widget] .bg-cyan-500\/5 { background-color: rgba(var(--j-acc-rgb), 0.06); }
+html[data-theme-mode="multi"] [data-widget] .bg-cyan-400\/10 { background-color: rgba(var(--j-acc-rgb), 0.12); }

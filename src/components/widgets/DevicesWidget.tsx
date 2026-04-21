@@ -13,6 +13,7 @@ export function DevicesWidget() {
 
   return (
     <Card
+      widget="news"
       title="Tilsluttede enheder"
       className="sm:col-span-2 lg:col-span-3"
       action={<span className="text-xs text-neutral-500 font-mono">{total} i alt</span>}

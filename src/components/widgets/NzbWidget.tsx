@@ -9,6 +9,7 @@ export function NzbWidget() {
 
   return (
     <Card
+      widget="plex"
       title="NZBGeek"
       className="sm:col-span-2 lg:col-span-2"
       action={

@@ -43,6 +43,7 @@ export function EarthquakesWidget() {
 
   return (
     <Card
+      widget="quake"
       title="Jordskælv · 24t"
       className="sm:col-span-2 lg:col-span-3"
       action={

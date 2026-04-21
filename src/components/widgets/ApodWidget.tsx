@@ -50,6 +50,7 @@ export function ApodWidget() {
 
   return (
     <Card
+      widget="apod"
       title="Opdag · roterende"
       className="sm:col-span-2 lg:col-span-6"
       action={

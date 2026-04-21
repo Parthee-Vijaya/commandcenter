@@ -176,6 +176,7 @@ export function FlightsWidget() {
 
   return (
     <Card
+      widget="flights"
       title={`Fly · ${radiusKm}km`}
       className="sm:col-span-2 lg:col-span-3"
       action={

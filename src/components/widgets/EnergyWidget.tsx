@@ -43,7 +43,7 @@ export function EnergyWidget() {
   const price = data?.region === "DK1" ? data?.priceDK1Kr : data?.priceDK2Kr;
 
   return (
-    <Card title="Elpris · DK" className="sm:col-span-2 lg:col-span-3">
+    <Card widget="energy" title="Elpris · DK" className="sm:col-span-2 lg:col-span-3">
       <div className="space-y-3">
         <div className="flex items-baseline gap-2">
           <span className={`text-3xl font-light tabular-nums ${priceColor(price ?? null)}`}>

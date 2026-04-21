@@ -27,7 +27,7 @@ export function LightningWidget() {
   const active = (data?.last1h ?? 0) > 0 || (data?.totalToday ?? 0) > 0;
 
   return (
-    <Card title="Tordenaktivitet" className="sm:col-span-1 lg:col-span-2">
+    <Card widget="weather" title="Tordenaktivitet" className="sm:col-span-1 lg:col-span-2">
       <div className="flex items-baseline gap-3 mb-3">
         <span className="text-3xl font-light tabular-nums text-amber-300">
           {data?.last1h ?? 0}

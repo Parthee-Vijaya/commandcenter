@@ -17,7 +17,7 @@ export function CpuWidget() {
   const load = data?.cpu.load ?? 0;
 
   return (
-    <Card title="CPU · Systemkerne" className="sm:col-span-1 lg:col-span-2">
+    <Card widget="cpu" title="CPU · Systemkerne" className="sm:col-span-1 lg:col-span-2">
       <div className="flex items-center gap-4">
         <Gauge value={load} label={`${data?.cpu.cores ?? "—"} cores`} color="#00d9ff" size={100} />
         <div className="flex-1 min-w-0">

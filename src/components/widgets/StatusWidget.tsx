@@ -67,6 +67,7 @@ export function StatusWidget() {
 
   return (
     <Card
+      widget="status"
       title="Status · Net"
       className="sm:col-span-2 lg:col-span-2"
       action={

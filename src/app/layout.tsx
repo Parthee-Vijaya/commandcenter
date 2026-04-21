@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { ThemeSettings } from "@/components/ThemeSettings";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -33,7 +35,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="da" className={`${geist.variable} ${geistMono.variable}`}>
-      <body>{children}</body>
+      <body>
+        <ThemeProvider>
+          {children}
+          <ThemeSettings />
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

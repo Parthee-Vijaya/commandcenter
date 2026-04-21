@@ -10,6 +10,8 @@ import { PlexWidget } from "./widgets/PlexWidget";
 import { DevicesWidget } from "./widgets/DevicesWidget";
 import { NewsWidget } from "./widgets/NewsWidget";
 import { NzbWidget } from "./widgets/NzbWidget";
+import { MarketsWidget } from "./widgets/MarketsWidget";
+import { GithubWidget } from "./widgets/GithubWidget";
 import { EnergyWidget } from "./widgets/EnergyWidget";
 import { FlightsWidget } from "./widgets/FlightsWidget";
 import { TrafficWidget } from "./widgets/TrafficWidget";
@@ -54,28 +56,40 @@ export function Dashboard() {
     ? now.toLocaleDateString("da-DK", { weekday: "long", day: "numeric", month: "long" })
     : "—";
   const timeStr = now
-    ? now.toLocaleTimeString("da-DK", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
-    : "--:--:--";
+    ? now.toLocaleTimeString("da-DK", { hour: "2-digit", minute: "2-digit" })
+    : "--:--";
 
   return (
     <div className="min-h-screen p-3 sm:p-6 lg:p-8">
-      <header className="max-w-7xl mx-auto mb-5 sm:mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <h1 className="text-2xl sm:text-4xl font-thin tracking-[0.2em] sm:tracking-[0.3em] text-cyan-100 holo-title-glow">
-            J.A.R.V.I.S.
-          </h1>
-          <p className="text-cyan-400/60 text-[10px] sm:text-xs mt-1.5 sm:mt-2 font-mono uppercase tracking-widest">
-            <span className="capitalize">{dateStr}</span> · {timeStr}
-          </p>
-          <p
-            className={`text-[11px] sm:text-xs text-neutral-400 italic mt-2 max-w-xl transition-opacity duration-400 ${
-              fading ? "opacity-0" : "opacity-100"
-            }`}
-          >
-            {quote || "\u00a0"}
-          </p>
+      {/* Editorial header — stor klokke + claude-code + citat */}
+      <header className="max-w-7xl mx-auto mb-6 sm:mb-10 relative rounded-2xl border border-cyan-400/15 bg-[#0d1518]/60 p-5 sm:p-8 lg:p-10 overflow-hidden">
+        <div className="relative flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0 flex-1">
+            <div className="text-[10px] uppercase tracking-[0.35em] text-cyan-400/70 font-mono">
+              ▌ J.A.R.V.I.S. · Personal Intelligence
+            </div>
+            <h1
+              className="text-6xl sm:text-7xl lg:text-[120px] leading-[0.9] tracking-[-0.04em] mt-3 sm:mt-4 font-thin text-cyan-100 tabular-nums"
+            >
+              {timeStr}
+            </h1>
+            <p className="text-xs sm:text-sm uppercase tracking-[0.2em] mt-3 sm:mt-4 text-neutral-400 capitalize">
+              {dateStr}
+            </p>
+          </div>
+
+          <div className="flex flex-col items-start sm:items-end gap-3 sm:gap-4 shrink-0">
+            <ClaudeHeaderStats />
+          </div>
         </div>
-        <ClaudeHeaderStats />
+
+        <p
+          className={`relative text-[11px] sm:text-sm text-neutral-400 italic mt-5 sm:mt-8 pt-4 sm:pt-6 border-t border-cyan-400/10 max-w-3xl transition-opacity duration-400 ${
+            fading ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          {quote ? `\u201C${quote}\u201D` : "\u00a0"}
+        </p>
       </header>
 
       <main className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5 sm:gap-3 auto-rows-min">
@@ -92,7 +106,7 @@ export function Dashboard() {
         <TrafficWidget />
 
         {/* Row 4 · Ambient */}
-        <EnergyWidget />
+        <DiskWidget />
         <SpaceWeatherWidget />
 
         {/* Row 5 · Live events */}
@@ -101,15 +115,17 @@ export function Dashboard() {
 
         {/* Row 6 · Smaller metrics */}
         <LightningWidget />
-        <DiskWidget />
+        <EnergyWidget />
         <AirWidget />
 
         {/* Row 7 · Media & hardware */}
         <PlexWidget />
         <DevicesWidget />
 
-        {/* Row 8 · Downloads */}
+        {/* Row 8 · Downloads + data-tunge widgets */}
         <NzbWidget />
+        <MarketsWidget />
+        <GithubWidget />
 
         {/* Row 9 · News */}
         <NewsWidget />

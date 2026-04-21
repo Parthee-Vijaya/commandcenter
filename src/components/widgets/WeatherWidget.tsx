@@ -55,7 +55,7 @@ export function WeatherWidget() {
 
   if (!data) {
     return (
-      <Card title="Vejr · Måne" className="sm:col-span-2 lg:col-span-3">
+      <Card widget="weather" title="Vejr · Måne" className="sm:col-span-2 lg:col-span-3">
         <div className="text-neutral-500 text-sm">Indlæser...</div>
       </Card>
     );
@@ -63,6 +63,7 @@ export function WeatherWidget() {
 
   return (
     <Card
+      widget="weather"
       title="Vejr · Måne"
       className="sm:col-span-2 lg:col-span-3"
       action={<span className="text-xs text-neutral-500 truncate max-w-[100px]">{data.location}</span>}

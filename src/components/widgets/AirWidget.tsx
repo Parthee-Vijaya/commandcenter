@@ -56,6 +56,7 @@ export function AirWidget() {
 
   return (
     <Card
+      widget="weather"
       title="Luftkvalitet"
       className="sm:col-span-1 lg:col-span-2"
       action={

@@ -25,11 +25,14 @@ function layerText(key: string): string {
 }
 
 function Webcam({ source, label }: { source: string; label: string }) {
-  const [ts, setTs] = useState(() => Date.now());
+  // Start med 0 så SSR og initial client-render matcher. Client sætter
+  // derefter rigtig timestamp + intervallet i useEffect.
+  const [ts, setTs] = useState(0);
   const [failed, setFailed] = useState(false);
 
-  // Refresh the JPG every 30s.
+  // Refresh the JPG every 30s (first tick sætter også en ikke-0 værdi).
   useEffect(() => {
+    setTs(Date.now());
     const id = setInterval(() => setTs(Date.now()), 30_000);
     return () => clearInterval(id);
   }, []);
@@ -98,6 +101,7 @@ export function TrafficWidget() {
 
   return (
     <Card
+      widget="traffic"
       title="Trafik · Storebælt"
       className="sm:col-span-2 lg:col-span-3"
       action={

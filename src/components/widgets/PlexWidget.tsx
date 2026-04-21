@@ -8,6 +8,7 @@ export function PlexWidget() {
 
   return (
     <Card
+      widget="plex"
       title="Plex"
       className="sm:col-span-1 lg:col-span-3"
       action={

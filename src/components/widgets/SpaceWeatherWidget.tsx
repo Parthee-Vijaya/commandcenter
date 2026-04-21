@@ -89,16 +89,18 @@ function AuroraOval({ kp }: { kp: number | null }) {
         );
       })}
 
-      {/* Længdegrads-linjer (hver 30°) */}
+      {/* Længdegrads-linjer (hver 30°). Afrundet så SSR- og client-float matcher */}
       {Array.from({ length: 12 }).map((_, i) => {
         const a = (i * 30 * Math.PI) / 180;
+        const x2 = Math.round((cx + Math.cos(a) * rEarth) * 1000) / 1000;
+        const y2 = Math.round((cy + Math.sin(a) * rEarth) * 1000) / 1000;
         return (
           <line
             key={i}
             x1={cx}
             y1={cy}
-            x2={cx + Math.cos(a) * rEarth}
-            y2={cy + Math.sin(a) * rEarth}
+            x2={x2}
+            y2={y2}
             stroke="#00d9ff"
             strokeWidth="0.3"
             strokeOpacity="0.1"
@@ -157,7 +159,7 @@ export function SpaceWeatherWidget() {
   const { data } = usePoll<SpaceWeatherData>("/api/space", 5 * 60_000);
 
   return (
-    <Card title="Rumvejr" className="sm:col-span-2 lg:col-span-3">
+    <Card widget="space" title="Rumvejr" className="sm:col-span-2 lg:col-span-3">
       <div className="grid grid-cols-[auto_1fr] gap-3 items-center">
         <AuroraOval kp={data?.kpIndex ?? null} />
 
