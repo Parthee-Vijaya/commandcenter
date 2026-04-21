@@ -6,11 +6,31 @@ import type { SystemData, ProcessInfo } from "@/lib/types";
 
 const execAsync = promisify(exec);
 
-async function readPower(): Promise<{ source: "ac" | "battery" | "unknown"; thermalWarning: boolean }> {
+async function readBatteryWatts(): Promise<number | null> {
   try {
-    const [ps, therm] = await Promise.all([
+    const { stdout } = await execAsync(
+      "ioreg -rw0 -c AppleSmartBattery 2>/dev/null",
+      { timeout: 1500 }
+    );
+    const amp = stdout.match(/"InstantAmperage"\s*=\s*(-?\d+)/);
+    const volt = stdout.match(/"Voltage"\s*=\s*(\d+)/);
+    if (!amp || !volt) return null;
+    // InstantAmperage: mA (negative = discharging). Voltage: mV.
+    const mA = Math.abs(parseInt(amp[1], 10));
+    const mV = parseInt(volt[1], 10);
+    const watts = (mA * mV) / 1_000_000;
+    return Math.round(watts * 10) / 10;
+  } catch {
+    return null;
+  }
+}
+
+async function readPower(): Promise<{ source: "ac" | "battery" | "unknown"; thermalWarning: boolean; watts: number | null }> {
+  try {
+    const [ps, therm, watts] = await Promise.all([
       execAsync("pmset -g ps", { timeout: 1500 }).catch(() => ({ stdout: "" })),
       execAsync("pmset -g therm", { timeout: 1500 }).catch(() => ({ stdout: "" })),
+      readBatteryWatts(),
     ]);
     const source = ps.stdout.includes("AC Power")
       ? "ac"
@@ -20,9 +40,9 @@ async function readPower(): Promise<{ source: "ac" | "battery" | "unknown"; ther
     const thermalWarning =
       /CPU_Scheduler_Limit\s*=\s*([0-9]+)/.test(therm.stdout) &&
       !/CPU_Scheduler_Limit\s*=\s*100/.test(therm.stdout);
-    return { source, thermalWarning };
+    return { source, thermalWarning, watts };
   } catch {
-    return { source: "unknown", thermalWarning: false };
+    return { source: "unknown", thermalWarning: false, watts: null };
   }
 }
 

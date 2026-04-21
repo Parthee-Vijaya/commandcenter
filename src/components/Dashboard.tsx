@@ -13,6 +13,13 @@ import { DevicesWidget } from "./widgets/DevicesWidget";
 import { NewsWidget } from "./widgets/NewsWidget";
 import { NzbWidget } from "./widgets/NzbWidget";
 import { ClaudeStatusWidget } from "./widgets/ClaudeStatusWidget";
+import { EnergyWidget } from "./widgets/EnergyWidget";
+import { MoonWidget } from "./widgets/MoonWidget";
+import { FlightsWidget } from "./widgets/FlightsWidget";
+import { SpaceWeatherWidget } from "./widgets/SpaceWeatherWidget";
+import { EarthquakesWidget } from "./widgets/EarthquakesWidget";
+import { LightningWidget } from "./widgets/LightningWidget";
+import { ApodWidget } from "./widgets/ApodWidget";
 import { QUOTES } from "@/lib/quotes";
 
 function useClock() {
@@ -77,16 +84,23 @@ export function Dashboard() {
       </header>
 
       <main className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 auto-rows-min">
+        <ApodWidget />
         <CpuWidget />
         <MemoryWidget />
         <StatusWidget />
         <DiskWidget />
         <WeatherWidget />
+        <MoonWidget />
+        <EnergyWidget />
+        <SpaceWeatherWidget />
+        <FlightsWidget />
+        <EarthquakesWidget />
+        <LightningWidget />
+        <AirWidget />
         <PlexWidget />
         <VpnWidget />
         <NetworkWidget />
         <ClaudeStatusWidget />
-        <AirWidget />
         <DevicesWidget />
         <NzbWidget />
         <NewsWidget />

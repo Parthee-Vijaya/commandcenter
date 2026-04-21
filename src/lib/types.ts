@@ -13,7 +13,7 @@ export interface SystemData {
   network: { rxSec: number; txSec: number };
   battery: { hasBattery: boolean; percent: number | null; charging: boolean };
   host: { hostname: string; uptime: number; platform: string };
-  power: { source: "ac" | "battery" | "unknown"; thermalWarning: boolean };
+  power: { source: "ac" | "battery" | "unknown"; thermalWarning: boolean; watts: number | null };
   processes: { topCpu: ProcessInfo[]; topMem: ProcessInfo[]; total: number };
   loadAvg: [number, number, number];
 }

@@ -87,6 +87,13 @@ export function StatusWidget() {
           </span>
         </div>
 
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] text-neutral-500 uppercase tracking-wider">Forbrug</span>
+          <span className="text-xs font-mono tabular-nums text-cyan-300">
+            {data?.power.watts != null ? `${data.power.watts.toFixed(1)} W` : "—"}
+          </span>
+        </div>
+
         <div className="pt-2 border-t border-neutral-800 space-y-1.5">
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-neutral-500 uppercase tracking-wider">CPU puls</span>
