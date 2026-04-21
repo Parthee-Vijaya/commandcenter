@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useTheme } from "./ThemeProvider";
 import { PRESETS } from "@/lib/theme";
 
@@ -93,6 +94,29 @@ export function ThemeSettings() {
                   style={{ backgroundColor: p.hex }}
                 />
               ))}
+            </div>
+          </div>
+
+          {/* Navigation */}
+          <div className="mb-4 pt-3 border-t border-white/10">
+            <div className="text-[9px] uppercase tracking-widest text-neutral-500 mb-2">
+              Navigation
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <Link
+                href="/chat"
+                onClick={() => setOpen(false)}
+                className="text-center py-2 rounded border border-cyan-400/30 text-xs text-cyan-200 hover:border-cyan-400/60 hover:bg-cyan-400/5 transition-colors"
+              >
+                💬 Chat
+              </Link>
+              <Link
+                href="/settings"
+                onClick={() => setOpen(false)}
+                className="text-center py-2 rounded border border-cyan-400/30 text-xs text-cyan-200 hover:border-cyan-400/60 hover:bg-cyan-400/5 transition-colors"
+              >
+                ⚙ Indstillinger
+              </Link>
             </div>
           </div>
 

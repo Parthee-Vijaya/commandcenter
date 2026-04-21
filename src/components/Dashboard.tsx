@@ -18,6 +18,7 @@ import { TrafficWidget } from "./widgets/TrafficWidget";
 import { EarthquakesWidget } from "./widgets/EarthquakesWidget";
 import { LightningWidget } from "./widgets/LightningWidget";
 import { ApodWidget } from "./widgets/ApodWidget";
+import { ChatWidget } from "./widgets/ChatWidget";
 import { ClaudeHeaderStats } from "./ClaudeHeaderStats";
 import { QUOTES } from "@/lib/quotes";
 
@@ -101,8 +102,8 @@ export function Dashboard() {
         {/* Row 2 · APOD hero */}
         <ApodWidget />
 
-        {/* Row 3 · Vejr (vejr+måne+rumvejr) + Trafik */}
-        <WeatherWidget />
+        {/* Row 3 · Chat + Trafik */}
+        <ChatWidget />
         <TrafficWidget />
 
         {/* Row 4 · Live events */}
@@ -118,12 +119,13 @@ export function Dashboard() {
         <PlexWidget />
         <DevicesWidget />
 
-        {/* Row 7 · Downloads + data-tunge widgets */}
+        {/* Row 7 · Vejr + Downloads + Markedsdata */}
+        <WeatherWidget />
         <NzbWidget />
         <MarketsWidget />
-        <GithubWidget />
 
-        {/* Row 8 · News */}
+        {/* Row 8 · GitHub + News */}
+        <GithubWidget />
         <NewsWidget />
       </main>
 
