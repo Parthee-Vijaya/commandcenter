@@ -45,7 +45,7 @@ export function EarthquakesWidget() {
     <Card
       widget="quake"
       title="Jordskælv · 24t"
-      className="sm:col-span-2 lg:col-span-3"
+      className="sm:col-span-2 lg:col-span-6"
       action={
         <span className="text-[10px] font-mono text-cyan-400/60">
           {data?.count ?? 0} · M4.5+

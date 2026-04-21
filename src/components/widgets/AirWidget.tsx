@@ -58,7 +58,7 @@ export function AirWidget() {
     <Card
       widget="weather"
       title="Luftkvalitet"
-      className="sm:col-span-1 lg:col-span-2"
+      className="sm:col-span-1 lg:col-span-3"
       action={
         data && (
           <span className={`text-xs px-2 py-0.5 rounded-md ${ratingColor(data.rating)}`}>

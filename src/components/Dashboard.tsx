@@ -15,7 +15,6 @@ import { GithubWidget } from "./widgets/GithubWidget";
 import { EnergyWidget } from "./widgets/EnergyWidget";
 import { FlightsWidget } from "./widgets/FlightsWidget";
 import { TrafficWidget } from "./widgets/TrafficWidget";
-import { SpaceWeatherWidget } from "./widgets/SpaceWeatherWidget";
 import { EarthquakesWidget } from "./widgets/EarthquakesWidget";
 import { LightningWidget } from "./widgets/LightningWidget";
 import { ApodWidget } from "./widgets/ApodWidget";
@@ -92,42 +91,39 @@ export function Dashboard() {
         </p>
       </header>
 
-      <main className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5 sm:gap-3 auto-rows-min">
-        {/* Row 1 · System gauges */}
+      <main className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2.5 sm:gap-3 auto-rows-min">
+        {/* Row 1 · System gauges — 4 lige store */}
         <CpuWidget />
         <MemoryWidget />
         <StatusWidget />
+        <DiskWidget />
 
         {/* Row 2 · APOD hero */}
         <ApodWidget />
 
-        {/* Row 3 · Vejr+Måne + Trafik */}
+        {/* Row 3 · Vejr (vejr+måne+rumvejr) + Trafik */}
         <WeatherWidget />
         <TrafficWidget />
 
-        {/* Row 4 · Ambient */}
-        <DiskWidget />
-        <SpaceWeatherWidget />
-
-        {/* Row 5 · Live events */}
+        {/* Row 4 · Live events */}
         <FlightsWidget />
         <EarthquakesWidget />
 
-        {/* Row 6 · Smaller metrics */}
-        <LightningWidget />
+        {/* Row 5 · Ambient + smaller metrics */}
         <EnergyWidget />
+        <LightningWidget />
         <AirWidget />
 
-        {/* Row 7 · Media & hardware */}
+        {/* Row 6 · Media & hardware */}
         <PlexWidget />
         <DevicesWidget />
 
-        {/* Row 8 · Downloads + data-tunge widgets */}
+        {/* Row 7 · Downloads + data-tunge widgets */}
         <NzbWidget />
         <MarketsWidget />
         <GithubWidget />
 
-        {/* Row 9 · News */}
+        {/* Row 8 · News */}
         <NewsWidget />
       </main>
 

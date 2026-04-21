@@ -117,7 +117,7 @@ export function MarketsWidget() {
     <Card
       widget="energy"
       title="Markeder"
-      className="sm:col-span-2 lg:col-span-2"
+      className="sm:col-span-2 lg:col-span-4"
       action={
         <span className="text-[10px] font-mono text-[var(--j-acc,_#00d9ff)]/60 uppercase tracking-wider">
           DKK · live

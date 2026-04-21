@@ -19,7 +19,7 @@ export function MemoryWidget() {
   const pct = data?.memory.percent ?? 0;
 
   return (
-    <Card widget="memory" title="Hukommelse" className="sm:col-span-1 lg:col-span-2">
+    <Card widget="memory" title="Hukommelse" className="sm:col-span-1 lg:col-span-3">
       <div className="flex items-center gap-4">
         <Gauge value={pct} label={`${usedGb} / ${totalGb}GB`} color="#a78bfa" size={100} />
         <div className="flex-1 min-w-0">

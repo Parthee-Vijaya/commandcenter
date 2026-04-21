@@ -69,7 +69,7 @@ export function StatusWidget() {
     <Card
       widget="status"
       title="Status · Net"
-      className="sm:col-span-2 lg:col-span-2"
+      className="sm:col-span-2 lg:col-span-3"
       action={
         <span className="text-[10px] text-neutral-500 font-mono truncate max-w-[140px]">
           {isStale ? <span className="text-amber-500">stale</span> : data?.host.hostname?.split("-")[0]}

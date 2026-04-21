@@ -1,8 +1,22 @@
 "use client";
 import { usePoll } from "@/hooks/usePoll";
 import { Card } from "@/components/ui/Card";
-import type { WeatherData, MoonData } from "@/lib/types";
+import type { WeatherData, MoonData, SpaceWeatherData } from "@/lib/types";
 import { weatherEmoji, weatherLabel } from "@/lib/formatters";
+
+const AURORA_COLOR: Record<SpaceWeatherData["auroraChance"], string> = {
+  low: "text-neutral-400",
+  moderate: "text-cyan-300",
+  high: "text-emerald-300",
+  severe: "text-fuchsia-400",
+};
+
+const AURORA_LABEL: Record<SpaceWeatherData["auroraChance"], string> = {
+  low: "Lav",
+  moderate: "Moderat",
+  high: "Høj",
+  severe: "Meget høj",
+};
 
 function MoonDisc({ phase, illumination }: { phase: number; illumination: number }) {
   const size = 52;
@@ -52,20 +66,31 @@ function daysUntil(iso: string | undefined): string {
 export function WeatherWidget() {
   const { data } = usePoll<WeatherData>("/api/weather", 10 * 60_000);
   const { data: moon } = usePoll<MoonData>("/api/moon", 60 * 60_000);
+  const { data: space } = usePoll<SpaceWeatherData>("/api/space", 5 * 60_000);
 
   if (!data) {
     return (
-      <Card widget="weather" title="Vejr · Måne" className="sm:col-span-2 lg:col-span-3">
+      <Card widget="weather" title="Vejr · Måne · Rumvejr" className="sm:col-span-2 lg:col-span-6">
         <div className="text-neutral-500 text-sm">Indlæser...</div>
       </Card>
     );
   }
 
+  const kp = space?.kpIndex ?? null;
+  const kpColor =
+    kp == null
+      ? "text-neutral-500"
+      : kp < 4
+      ? "text-cyan-300"
+      : kp < 6
+      ? "text-amber-300"
+      : "text-fuchsia-400";
+
   return (
     <Card
       widget="weather"
-      title="Vejr · Måne"
-      className="sm:col-span-2 lg:col-span-3"
+      title="Vejr · Måne · Rumvejr"
+      className="sm:col-span-2 lg:col-span-6"
       action={<span className="text-xs text-neutral-500 truncate max-w-[100px]">{data.location}</span>}
     >
       {/* Top: temperature + moon side by side */}
@@ -125,6 +150,37 @@ export function WeatherWidget() {
         <div>
           <div className="text-neutral-500 text-[9px] uppercase tracking-wider">Nymåne</div>
           <div className="text-cyan-300">{daysUntil(moon?.nextNewMoon)}</div>
+        </div>
+      </div>
+
+      {/* Rumvejr */}
+      <div className="mt-3 pt-3 border-t border-cyan-400/10">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-[9px] uppercase tracking-[0.25em] text-neutral-500">Rumvejr</span>
+          <div className="flex items-baseline gap-1">
+            <span className={`text-xl font-light tabular-nums ${kpColor}`}>
+              {kp != null ? kp.toFixed(1) : "—"}
+            </span>
+            <span className="text-[9px] text-neutral-500 uppercase tracking-wider">Kp</span>
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-2 text-[10px] font-mono">
+          <div>
+            <div className="text-neutral-500 text-[9px] uppercase tracking-wider">Aurora</div>
+            <div className={AURORA_COLOR[space?.auroraChance ?? "low"]}>
+              {AURORA_LABEL[space?.auroraChance ?? "low"]}
+            </div>
+          </div>
+          <div>
+            <div className="text-neutral-500 text-[9px] uppercase tracking-wider">Solvind</div>
+            <div className="text-neutral-300 tabular-nums">
+              {space?.solarWindKmS != null ? `${space.solarWindKmS} km/s` : "—"}
+            </div>
+          </div>
+          <div>
+            <div className="text-neutral-500 text-[9px] uppercase tracking-wider">Røntgen</div>
+            <div className="text-neutral-300">{space?.xrayClass ?? "—"}</div>
+          </div>
         </div>
       </div>
     </Card>

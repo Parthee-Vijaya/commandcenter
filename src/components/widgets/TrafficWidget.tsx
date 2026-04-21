@@ -103,7 +103,7 @@ export function TrafficWidget() {
     <Card
       widget="traffic"
       title="Trafik · Storebælt"
-      className="sm:col-span-2 lg:col-span-3"
+      className="sm:col-span-2 lg:col-span-6"
       action={
         <span className="text-[10px] font-mono text-cyan-400/60">
           {total} aktive · DK

@@ -85,7 +85,7 @@ export function GithubWidget() {
     <Card
       widget="news"
       title="GitHub"
-      className="sm:col-span-2 lg:col-span-2"
+      className="sm:col-span-2 lg:col-span-4"
       action={
         data?.user ? (
           <span className="text-[10px] font-mono text-[var(--j-acc,_#00d9ff)]/60 uppercase tracking-wider">

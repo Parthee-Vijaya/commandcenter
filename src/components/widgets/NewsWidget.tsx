@@ -29,7 +29,7 @@ export function NewsWidget() {
     <Card
       widget="news"
       title="Nyheder"
-      className="sm:col-span-2 lg:col-span-6"
+      className="sm:col-span-2 lg:col-span-12"
       action={
         <span className="text-xs text-neutral-500 font-mono">
           {data ? `${data.items.length} historier` : isLoading ? "..." : "—"}

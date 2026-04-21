@@ -52,7 +52,7 @@ export function ApodWidget() {
     <Card
       widget="apod"
       title="Opdag · roterende"
-      className="sm:col-span-2 lg:col-span-6"
+      className="sm:col-span-2 lg:col-span-12"
       action={
         <div className="flex items-center gap-2">
           <span className="text-[10px] font-mono text-cyan-400/60">

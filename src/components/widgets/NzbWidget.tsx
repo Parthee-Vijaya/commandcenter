@@ -11,7 +11,7 @@ export function NzbWidget() {
     <Card
       widget="plex"
       title="NZBGeek"
-      className="sm:col-span-2 lg:col-span-2"
+      className="sm:col-span-2 lg:col-span-4"
       action={
         <span className="text-xs text-neutral-500 font-mono">
           {data?.items.length ?? (isLoading ? "..." : 0)} nye
