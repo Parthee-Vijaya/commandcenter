@@ -12,7 +12,6 @@ import { NetworkWidget } from "./widgets/NetworkWidget";
 import { DevicesWidget } from "./widgets/DevicesWidget";
 import { NewsWidget } from "./widgets/NewsWidget";
 import { NzbWidget } from "./widgets/NzbWidget";
-import { ClaudeStatusWidget } from "./widgets/ClaudeStatusWidget";
 import { EnergyWidget } from "./widgets/EnergyWidget";
 import { MoonWidget } from "./widgets/MoonWidget";
 import { FlightsWidget } from "./widgets/FlightsWidget";
@@ -20,6 +19,7 @@ import { SpaceWeatherWidget } from "./widgets/SpaceWeatherWidget";
 import { EarthquakesWidget } from "./widgets/EarthquakesWidget";
 import { LightningWidget } from "./widgets/LightningWidget";
 import { ApodWidget } from "./widgets/ApodWidget";
+import { ClaudeHeaderStats } from "./ClaudeHeaderStats";
 import { QUOTES } from "@/lib/quotes";
 
 function useClock() {
@@ -77,32 +77,45 @@ export function Dashboard() {
             {quote || "\u00a0"}
           </p>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-cyan-400/30 bg-cyan-500/5 w-fit shrink-0">
-          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 pulse-dot" style={{ boxShadow: "0 0 8px #00d9ff" }} />
-          <span className="text-[10px] text-cyan-300/80 uppercase tracking-[0.2em]">Operational</span>
-        </div>
+        <ClaudeHeaderStats />
       </header>
 
       <main className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 auto-rows-min">
-        <ApodWidget />
+        {/* Row 1 · System gauges */}
         <CpuWidget />
         <MemoryWidget />
         <StatusWidget />
-        <DiskWidget />
+
+        {/* Row 2 · APOD hero */}
+        <ApodWidget />
+
+        {/* Row 3 · Celestial */}
         <WeatherWidget />
         <MoonWidget />
+
+        {/* Row 4 · Ambient */}
         <EnergyWidget />
         <SpaceWeatherWidget />
+
+        {/* Row 5 · Live events */}
         <FlightsWidget />
         <EarthquakesWidget />
+
+        {/* Row 6 · Smaller metrics */}
         <LightningWidget />
+        <DiskWidget />
         <AirWidget />
+
+        {/* Row 7 · Media & hardware */}
         <PlexWidget />
+        <DevicesWidget />
+
+        {/* Row 8 · Network & downloads */}
         <VpnWidget />
         <NetworkWidget />
-        <ClaudeStatusWidget />
-        <DevicesWidget />
         <NzbWidget />
+
+        {/* Row 9 · News */}
         <NewsWidget />
       </main>
 

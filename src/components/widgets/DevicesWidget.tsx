@@ -14,7 +14,7 @@ export function DevicesWidget() {
   return (
     <Card
       title="Tilsluttede enheder"
-      className="sm:col-span-2 lg:col-span-2"
+      className="sm:col-span-2 lg:col-span-3"
       action={<span className="text-xs text-neutral-500 font-mono">{total} i alt</span>}
     >
       <div className="grid grid-cols-3 gap-2 text-center mb-3">

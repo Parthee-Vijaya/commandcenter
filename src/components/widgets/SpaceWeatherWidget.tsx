@@ -47,7 +47,7 @@ export function SpaceWeatherWidget() {
   const { data } = usePoll<SpaceWeatherData>("/api/space", 5 * 60_000);
 
   return (
-    <Card title="Rumvejr" className="sm:col-span-1 lg:col-span-2">
+    <Card title="Rumvejr" className="sm:col-span-1 lg:col-span-3">
       <div className="space-y-3">
         <div className="flex items-center gap-3">
           <KpBar kp={data?.kpIndex ?? null} />

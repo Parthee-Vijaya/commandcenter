@@ -9,7 +9,7 @@ export function PlexWidget() {
   return (
     <Card
       title="Plex"
-      className="sm:col-span-1 lg:col-span-2"
+      className="sm:col-span-1 lg:col-span-3"
       action={
         <span className="flex items-center gap-1.5 text-xs">
           <span

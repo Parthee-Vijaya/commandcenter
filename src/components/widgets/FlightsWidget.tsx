@@ -39,7 +39,7 @@ export function FlightsWidget() {
   return (
     <Card
       title={`Fly · ${data?.radiusKm ?? 50}km`}
-      className="sm:col-span-2 lg:col-span-2"
+      className="sm:col-span-2 lg:col-span-3"
       action={
         <span className="text-[10px] font-mono text-cyan-400/60">
           {data?.count ?? 0} over

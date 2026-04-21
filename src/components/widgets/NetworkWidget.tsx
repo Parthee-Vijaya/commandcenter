@@ -22,7 +22,7 @@ export function NetworkWidget() {
   return (
     <Card
       title="Netværk"
-      className="sm:col-span-1 lg:col-span-1"
+      className="sm:col-span-1 lg:col-span-2"
       action={
         <span className="flex items-center gap-1.5 text-xs">
           <span

@@ -55,7 +55,7 @@ export function DiskWidget() {
   return (
     <Card
       title="Lagring"
-      className="sm:col-span-2 lg:col-span-3"
+      className="sm:col-span-2 lg:col-span-2"
       action={
         <span className="text-xs text-neutral-500 font-mono">
           {devices.length} drev

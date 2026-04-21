@@ -13,7 +13,7 @@ export function ApodWidget() {
   return (
     <Card
       title="NASA · Dagens astrobillede"
-      className="sm:col-span-2 lg:col-span-3"
+      className="sm:col-span-2 lg:col-span-6"
       action={
         <span className="text-[10px] font-mono text-cyan-400/60">
           {data?.date ?? ""}

@@ -65,7 +65,7 @@ export function MoonWidget() {
   const { data } = usePoll<MoonData>("/api/moon", 60 * 60_000);
 
   return (
-    <Card title="Måne" className="sm:col-span-1 lg:col-span-2">
+    <Card title="Måne" className="sm:col-span-1 lg:col-span-3">
       <div className="flex items-center gap-4">
         <MoonDisc phase={data?.phase ?? 0} illumination={data?.illumination ?? 0} />
         <div className="flex-1 min-w-0">
