@@ -159,6 +159,13 @@ export function ControlWidget() {
           >
             📁
           </Link>
+          <Link
+            href="/automations"
+            title="Automations"
+            className="text-[10px] px-1.5 py-0.5 rounded border border-cyan-400/20 text-cyan-300/80 hover:border-cyan-400/50"
+          >
+            ⏱
+          </Link>
           <button
             onClick={refresh}
             title="Genopfrisk"

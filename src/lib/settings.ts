@@ -81,3 +81,35 @@ export function setLLMConfig(partial: Partial<LLMConfig>): void {
   if (partial.systemPrompt !== undefined) setSetting("llm_system_prompt", partial.systemPrompt);
   if (partial.verbose !== undefined) setSetting("llm_verbose", partial.verbose ? "true" : "false");
 }
+
+// --- Notifications ---
+
+export interface NotifyConfig {
+  /** macOS Notification Center enabled (kører via osascript) */
+  macos: boolean;
+  /** ntfy.sh topic — hvis udfyldt sendes push til https://ntfy.sh/<topic> */
+  ntfyTopic: string;
+  /** Custom ntfy-server (default https://ntfy.sh) */
+  ntfyServer: string;
+  /** Pushover user-key — hvis udfyldt sendes via Pushover */
+  pushoverUser: string;
+  /** Pushover app-token */
+  pushoverToken: string;
+}
+
+export const DEFAULT_NOTIFY_CONFIG: NotifyConfig = {
+  macos: true,
+  ntfyTopic: "",
+  ntfyServer: "https://ntfy.sh",
+  pushoverUser: "",
+  pushoverToken: "",
+};
+
+export function getNotifyConfig(): NotifyConfig {
+  return getSettingJSON<NotifyConfig>("notify_config", DEFAULT_NOTIFY_CONFIG);
+}
+
+export function setNotifyConfig(partial: Partial<NotifyConfig>): void {
+  const current = getNotifyConfig();
+  setSettingJSON("notify_config", { ...current, ...partial });
+}
