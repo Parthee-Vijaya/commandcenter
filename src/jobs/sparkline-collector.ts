@@ -1,5 +1,6 @@
 import { collect as collectSystem } from "@/lib/collectors/system";
 import { writePoints, pruneOld } from "@/lib/history";
+import { evaluateThresholds } from "@/lib/agent/thresholds";
 
 const INTERVAL_MS = 60_000;
 
@@ -8,15 +9,28 @@ let timer: NodeJS.Timeout | null = null;
 async function tick(): Promise<void> {
   try {
     const s = await collectSystem();
+    const metrics = {
+      cpu: s.cpu.load,
+      mem: s.memory.percent,
+      disk: s.disk.percent,
+      disk_percent: s.disk.percent, // alias så threshold-templates er intuitive
+      netIn: s.network.rxSec,
+      netOut: s.network.txSec,
+      temp: s.temperature ?? 0,
+      temperature: s.temperature ?? 0, // alias
+    };
     writePoints([
-      { metric: "cpu", value: s.cpu.load },
-      { metric: "mem", value: s.memory.percent },
-      { metric: "disk", value: s.disk.percent },
-      { metric: "netIn", value: s.network.rxSec },
-      { metric: "netOut", value: s.network.txSec },
-      { metric: "temp", value: s.temperature ?? 0 },
+      { metric: "cpu", value: metrics.cpu },
+      { metric: "mem", value: metrics.mem },
+      { metric: "disk", value: metrics.disk },
+      { metric: "netIn", value: metrics.netIn },
+      { metric: "netOut", value: metrics.netOut },
+      { metric: "temp", value: metrics.temp },
     ]);
     pruneOld();
+
+    // Evaluér threshold-triggers med de samme metrics
+    await evaluateThresholds(metrics);
   } catch (e) {
     console.error("[sparkline] tick failed", e);
   }

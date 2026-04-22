@@ -30,13 +30,38 @@ const TEMPLATES: Array<{
   {
     name: "Disk-alarm >90%",
     description: "Advarsel når disken er næsten fuld",
-    trigger: { type: "threshold", metric: "disk_percent", op: ">", value: 90 },
+    trigger: {
+      type: "threshold",
+      metric: "disk_percent",
+      op: ">",
+      value: 90,
+      cooldownSec: 3600,
+    },
     action: {
       type: "notify",
-      title: "Disk næsten fuld",
-      body: "Disken er over 90% — ryd op i Downloads/cache",
+      title: "Disk næsten fuld ({value}%)",
+      body: "Disken er over {threshold}% — ryd op i Downloads/cache",
       priority: "high",
       tag: "warning",
+    },
+  },
+  {
+    name: "CPU hot >85°C",
+    description: "Push når temperaturen er høj i 5 min",
+    trigger: {
+      type: "threshold",
+      metric: "temperature",
+      op: ">",
+      value: 85,
+      sustainSec: 300,
+      cooldownSec: 1800,
+    },
+    action: {
+      type: "notify",
+      title: "CPU varm ({value}°C)",
+      body: "Tjek om en proces er i loop — har været over {threshold}°C i 5+ min",
+      priority: "high",
+      tag: "fire",
     },
   },
   {
