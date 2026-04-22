@@ -113,3 +113,38 @@ export function setNotifyConfig(partial: Partial<NotifyConfig>): void {
   const current = getNotifyConfig();
   setSettingJSON("notify_config", { ...current, ...partial });
 }
+
+// --- Gmail IMAP ---
+
+export interface GmailConfig {
+  enabled: boolean;
+  /** Gmail-adresse (fx parti.vijaya1@gmail.com) */
+  user: string;
+  /**
+   * App password (IKKE dit normale Gmail-password).
+   * Opret her: https://myaccount.google.com/apppasswords
+   * Kræver 2FA aktiveret på kontoen.
+   */
+  appPassword: string;
+  /** Hvor mange minutter mellem hver triage-poll */
+  pollMinutes: number;
+  /** Send push om triage-resultat (ellers kun log) */
+  notifyOnTriage: boolean;
+}
+
+export const DEFAULT_GMAIL_CONFIG: GmailConfig = {
+  enabled: false,
+  user: "",
+  appPassword: "",
+  pollMinutes: 15,
+  notifyOnTriage: true,
+};
+
+export function getGmailConfig(): GmailConfig {
+  return getSettingJSON<GmailConfig>("gmail_config", DEFAULT_GMAIL_CONFIG);
+}
+
+export function setGmailConfig(partial: Partial<GmailConfig>): void {
+  const current = getGmailConfig();
+  setSettingJSON("gmail_config", { ...current, ...partial });
+}

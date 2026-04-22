@@ -11,6 +11,14 @@ interface NotifyCfg {
   pushoverConfigured: boolean;
 }
 
+interface GmailCfg {
+  enabled: boolean;
+  user: string;
+  hasPassword: boolean;
+  pollMinutes: number;
+  notifyOnTriage: boolean;
+}
+
 const TEMPLATES: Array<{
   name: string;
   description: string;
@@ -83,6 +91,10 @@ export default function AutomationsPage() {
   const [items, setItems] = useState<Automation[]>([]);
   const [loading, setLoading] = useState(true);
   const [notifyCfg, setNotifyCfg] = useState<NotifyCfg | null>(null);
+  const [gmailCfg, setGmailCfg] = useState<GmailCfg | null>(null);
+  const [gmailPassword, setGmailPassword] = useState("");
+  const [gmailTesting, setGmailTesting] = useState(false);
+  const [gmailMsg, setGmailMsg] = useState("");
   const [testing, setTesting] = useState(false);
   const [testMsg, setTestMsg] = useState<string>("");
   const [editing, setEditing] = useState<Automation | "new" | null>(null);
@@ -90,12 +102,14 @@ export default function AutomationsPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [a, n] = await Promise.all([
+      const [a, n, g] = await Promise.all([
         fetch("/api/automations", { cache: "no-store" }).then((r) => r.json()),
         fetch("/api/automations/notify-config", { cache: "no-store" }).then((r) => r.json()),
+        fetch("/api/automations/gmail-config", { cache: "no-store" }).then((r) => r.json()),
       ]);
       setItems(a.automations ?? []);
       setNotifyCfg(n);
+      setGmailCfg(g);
     } finally {
       setLoading(false);
     }
@@ -169,6 +183,40 @@ export default function AutomationsPage() {
       body: JSON.stringify(patch),
     });
     load();
+  };
+
+  const saveGmail = async (patch: Partial<GmailCfg> & { appPassword?: string }) => {
+    await fetch("/api/automations/gmail-config", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(patch),
+    });
+    load();
+  };
+
+  const testGmail = async () => {
+    setGmailTesting(true);
+    setGmailMsg("");
+    try {
+      // Gem evt. nyt password først
+      if (gmailPassword.trim()) {
+        await saveGmail({ appPassword: gmailPassword.trim() });
+        setGmailPassword("");
+      }
+      const res = await fetch("/api/automations/gmail-config", { method: "POST" });
+      const data = (await res.json()) as {
+        ok: boolean;
+        message: string;
+        total?: number;
+      };
+      setGmailMsg(
+        data.ok
+          ? `✓ ${data.message}${data.total != null ? ` · ${data.total} mails i INBOX` : ""}`
+          : `✗ ${data.message}`
+      );
+    } finally {
+      setGmailTesting(false);
+    }
   };
 
   return (
@@ -245,6 +293,102 @@ export default function AutomationsPage() {
                 </button>
                 {testMsg && (
                   <span className="text-[11px] font-mono text-neutral-400">{testMsg}</span>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="text-xs text-neutral-500">indlæser…</div>
+          )}
+        </section>
+
+        {/* Gmail IMAP-konfig */}
+        <section className="rounded-xl border border-cyan-400/15 bg-[#0a1216]/60 p-4">
+          <h2 className="text-sm font-medium text-cyan-200 mb-3">Gmail triage (IMAP)</h2>
+          {gmailCfg ? (
+            <div className="space-y-3 text-sm">
+              <label className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={gmailCfg.enabled}
+                  onChange={(e) => saveGmail({ enabled: e.target.checked })}
+                  className="accent-cyan-400"
+                />
+                <span className="text-neutral-200">Aktivér mail-triage</span>
+                <span className="text-[11px] text-neutral-500">
+                  (kun læs — vi sender aldrig noget)
+                </span>
+              </label>
+
+              <div className="flex items-center gap-3">
+                <label className="text-neutral-300 w-32 text-[13px]">Gmail-adresse</label>
+                <input
+                  type="email"
+                  value={gmailCfg.user}
+                  onChange={(e) => setGmailCfg({ ...gmailCfg, user: e.target.value })}
+                  onBlur={(e) => saveGmail({ user: e.target.value })}
+                  placeholder="dig@gmail.com"
+                  className="flex-1 bg-black/40 border border-cyan-400/20 rounded-lg px-3 py-1.5 text-sm font-mono text-neutral-200 focus:outline-none focus:border-cyan-400/50"
+                />
+              </div>
+
+              <div className="flex items-center gap-3">
+                <label className="text-neutral-300 w-32 text-[13px]">App-password</label>
+                <input
+                  type="password"
+                  value={gmailPassword}
+                  onChange={(e) => setGmailPassword(e.target.value)}
+                  placeholder={gmailCfg.hasPassword ? "(gemt — indtast for at ændre)" : "16 tegn fra Google"}
+                  className="flex-1 bg-black/40 border border-cyan-400/20 rounded-lg px-3 py-1.5 text-sm font-mono text-neutral-200 focus:outline-none focus:border-cyan-400/50"
+                />
+              </div>
+
+              <div className="text-[11px] text-neutral-500 pl-[8.5rem]">
+                Opret app-password på{" "}
+                <a
+                  href="https://myaccount.google.com/apppasswords"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-cyan-300 hover:underline"
+                >
+                  myaccount.google.com/apppasswords
+                </a>
+                {" "}(kræver 2FA). Password bruges kun lokalt — aldrig sendt videre.
+              </div>
+
+              <div className="flex items-center gap-3">
+                <label className="text-neutral-300 w-32 text-[13px]">Poll hver</label>
+                <input
+                  type="number"
+                  value={gmailCfg.pollMinutes}
+                  onChange={(e) =>
+                    setGmailCfg({ ...gmailCfg, pollMinutes: parseInt(e.target.value) || 15 })
+                  }
+                  onBlur={(e) => saveGmail({ pollMinutes: parseInt(e.target.value) || 15 })}
+                  min={5}
+                  max={120}
+                  className="w-20 bg-black/40 border border-cyan-400/20 rounded-lg px-3 py-1.5 text-sm font-mono text-neutral-200 focus:outline-none focus:border-cyan-400/50"
+                />
+                <span className="text-[11px] text-neutral-500">minutter</span>
+              </div>
+
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  onClick={testGmail}
+                  disabled={gmailTesting}
+                  className="px-3 py-1.5 rounded-lg bg-cyan-500/15 border border-cyan-400/30 text-cyan-100 text-[13px] hover:bg-cyan-500/25 disabled:opacity-40"
+                >
+                  {gmailTesting ? "tester…" : "Test forbindelse"}
+                </button>
+                <a
+                  href="/api/agent/triage-mail?push=1"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 rounded-lg bg-neutral-800 border border-neutral-700 text-neutral-300 text-[13px] hover:border-neutral-600"
+                >
+                  Kør triage nu
+                </a>
+                {gmailMsg && (
+                  <span className="text-[11px] font-mono text-neutral-400">{gmailMsg}</span>
                 )}
               </div>
             </div>
