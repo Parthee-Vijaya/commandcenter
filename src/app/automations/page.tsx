@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import type { Automation, Trigger, Action } from "@/lib/agent/types";
+import { AutomationEditor } from "@/components/automations/AutomationEditor";
 
 interface NotifyCfg {
   macos: boolean;
@@ -84,6 +85,7 @@ export default function AutomationsPage() {
   const [notifyCfg, setNotifyCfg] = useState<NotifyCfg | null>(null);
   const [testing, setTesting] = useState(false);
   const [testMsg, setTestMsg] = useState<string>("");
+  const [editing, setEditing] = useState<Automation | "new" | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -255,16 +257,24 @@ export default function AutomationsPage() {
         <section>
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-medium text-cyan-200">Aktive regler</h2>
-            <span className="text-[11px] text-neutral-500">
-              {items.length} i alt · {items.filter((i) => i.enabled).length} aktive
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="text-[11px] text-neutral-500">
+                {items.length} i alt · {items.filter((i) => i.enabled).length} aktive
+              </span>
+              <button
+                onClick={() => setEditing("new")}
+                className="px-3 py-1.5 rounded-lg bg-cyan-500/15 border border-cyan-400/30 text-cyan-100 text-[12px] hover:bg-cyan-500/25"
+              >
+                + Ny regel
+              </button>
+            </div>
           </div>
 
           {loading ? (
             <div className="text-xs text-neutral-500 py-8 text-center">indlæser…</div>
           ) : items.length === 0 ? (
             <div className="text-xs text-neutral-500 py-8 text-center border border-dashed border-cyan-400/15 rounded-xl">
-              Ingen automations endnu — prøv en skabelon nedenfor
+              Ingen automations endnu — tryk &quot;+ Ny regel&quot; eller prøv en skabelon nedenfor
             </div>
           ) : (
             <div className="space-y-2">
@@ -274,6 +284,7 @@ export default function AutomationsPage() {
                   a={a}
                   onToggle={() => toggle(a)}
                   onRun={() => runNow(a)}
+                  onEdit={() => setEditing(a)}
                   onDelete={() => remove(a)}
                 />
               ))}
@@ -301,6 +312,12 @@ export default function AutomationsPage() {
           </div>
         </section>
       </main>
+
+      <AutomationEditor
+        target={editing}
+        onClose={() => setEditing(null)}
+        onSaved={load}
+      />
     </div>
   );
 }
@@ -309,11 +326,13 @@ function AutomationCard({
   a,
   onToggle,
   onRun,
+  onEdit,
   onDelete,
 }: {
   a: Automation;
   onToggle: () => void;
   onRun: () => void;
+  onEdit: () => void;
   onDelete: () => void;
 }) {
   const statusColor =
@@ -362,6 +381,13 @@ function AutomationCard({
         title="Kør nu"
       >
         kør
+      </button>
+      <button
+        onClick={onEdit}
+        className="px-2.5 py-1 rounded-lg border border-cyan-400/20 text-[11px] text-cyan-200 hover:border-cyan-400/50 shrink-0"
+        title="Redigér"
+      >
+        redigér
       </button>
       <button
         onClick={onDelete}
