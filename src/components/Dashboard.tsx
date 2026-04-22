@@ -19,6 +19,7 @@ import { EarthquakesWidget } from "./widgets/EarthquakesWidget";
 import { LightningWidget } from "./widgets/LightningWidget";
 import { ApodWidget } from "./widgets/ApodWidget";
 import { ChatWidget } from "./widgets/ChatWidget";
+import { ControlWidget } from "./widgets/ControlWidget";
 import { ClaudeHeaderStats } from "./ClaudeHeaderStats";
 import { QUOTES } from "@/lib/quotes";
 
@@ -102,16 +103,19 @@ export function Dashboard() {
         {/* Row 2 · APOD hero */}
         <ApodWidget />
 
-        {/* Row 3 · Chat + Trafik */}
+        {/* Row 3 · Chat + Mission control */}
         <ChatWidget />
+        <ControlWidget />
+
+        {/* Row 4 · Trafik + Flights */}
         <TrafficWidget />
-
-        {/* Row 4 · Live events */}
         <FlightsWidget />
-        <EarthquakesWidget />
 
-        {/* Row 5 · Ambient + smaller metrics */}
+        {/* Row 5 · Jordskælv + Elpris */}
+        <EarthquakesWidget />
         <EnergyWidget />
+
+        {/* Row 6 · Ambient */}
         <LightningWidget />
         <AirWidget />
 
