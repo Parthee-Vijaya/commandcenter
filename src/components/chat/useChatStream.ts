@@ -1,11 +1,13 @@
 "use client";
 import { useCallback, useRef, useState } from "react";
-import type { ChatMessage, ChatMetrics } from "@/lib/chat-storage";
+import type { ChatMessage, ChatMetrics, ToolInvocation } from "@/lib/chat-storage";
 import { newMessageId } from "@/lib/chat-storage";
 
 interface SendOpts {
   model: string;
   systemPrompt: string;
+  /** Tillad destruktive tool-actions (stop/restart/quit). Default false. */
+  confirmDestructive?: boolean;
 }
 
 export interface UseChatStreamResult {
@@ -70,6 +72,8 @@ export function useChatStream(
             messages: history,
             model: opts.model,
             systemPrompt: opts.systemPrompt,
+            tools: true,
+            confirmDestructive: opts.confirmDestructive === true,
           }),
           signal: ac.signal,
         });
@@ -90,6 +94,7 @@ export function useChatStream(
         const decoder = new TextDecoder();
         let buffer = "";
         let collected = "";
+        const toolInvocations: ToolInvocation[] = [];
         let usage:
           | {
               prompt_tokens?: number;
@@ -97,6 +102,17 @@ export function useChatStream(
             }
           | null = null;
         let finishReason: string | undefined;
+
+        const updateAssistant = (patch: Partial<ChatMessage>) => {
+          setMessages((prev) => {
+            const copy = [...prev];
+            const last = copy[copy.length - 1];
+            if (last && last.id === assistantMsg.id) {
+              copy[copy.length - 1] = { ...last, ...patch };
+            }
+            return copy;
+          });
+        };
 
         // Eslint-disable: while(true) er bevidst — bryder på reader done/err
         // eslint-disable-next-line no-constant-condition
@@ -117,23 +133,47 @@ export function useChatStream(
                     usage: { prompt_tokens?: number; completion_tokens?: number };
                   }
                 | { type: "done"; finishReason: string }
-                | { type: "error"; message: string };
+                | { type: "error"; message: string }
+                | {
+                    type: "tool_call";
+                    id: string;
+                    name: string;
+                    args: Record<string, unknown>;
+                  }
+                | {
+                    type: "tool_result";
+                    id: string;
+                    name: string;
+                    ok: boolean;
+                    blocked?: boolean;
+                    content: string;
+                  };
 
               if (ev.type === "delta") {
                 if (firstTokenAt == null) firstTokenAt = performance.now();
                 collected += ev.text;
-                setMessages((prev) => {
-                  const copy = [...prev];
-                  const last = copy[copy.length - 1];
-                  if (last && last.id === assistantMsg.id) {
-                    copy[copy.length - 1] = { ...last, content: collected };
-                  }
-                  return copy;
-                });
+                updateAssistant({ content: collected });
               } else if (ev.type === "usage") {
                 usage = ev.usage;
               } else if (ev.type === "done") {
                 finishReason = ev.finishReason;
+              } else if (ev.type === "tool_call") {
+                toolInvocations.push({
+                  id: ev.id,
+                  name: ev.name,
+                  args: ev.args,
+                  startedAt: Date.now(),
+                });
+                updateAssistant({ tools: [...toolInvocations] });
+              } else if (ev.type === "tool_result") {
+                const inv = toolInvocations.find((t) => t.id === ev.id);
+                if (inv) {
+                  inv.ok = ev.ok;
+                  inv.blocked = ev.blocked;
+                  inv.result = ev.content;
+                  inv.endedAt = Date.now();
+                }
+                updateAssistant({ tools: [...toolInvocations] });
               } else if (ev.type === "error") {
                 throw new Error(ev.message);
               }
@@ -171,7 +211,12 @@ export function useChatStream(
           const copy = [...prev];
           const last = copy[copy.length - 1];
           if (last && last.id === assistantMsg.id) {
-            copy[copy.length - 1] = { ...last, content: collected, metrics };
+            copy[copy.length - 1] = {
+              ...last,
+              content: collected,
+              metrics,
+              tools: toolInvocations.length > 0 ? [...toolInvocations] : undefined,
+            };
           }
           return copy;
         });

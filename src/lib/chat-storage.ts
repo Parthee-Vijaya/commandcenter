@@ -17,12 +17,28 @@ export interface ChatMetrics {
   model?: string;
 }
 
+export interface ToolInvocation {
+  id: string;
+  name: string;
+  args: Record<string, unknown>;
+  /** JSON-stringified resultat fra dispatcher */
+  result?: string;
+  ok?: boolean;
+  blocked?: boolean;
+  /** Timestamp ved start */
+  startedAt: number;
+  /** Timestamp ved resultat */
+  endedAt?: number;
+}
+
 export interface ChatMessage {
   id: string;
   role: "user" | "assistant" | "system";
   content: string;
   createdAt: number;
   metrics?: ChatMetrics;
+  /** Tool-calls udført i denne besked-turn */
+  tools?: ToolInvocation[];
 }
 
 export interface Conversation {

@@ -6,6 +6,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useChatStream } from "@/components/chat/useChatStream";
 import { MessageMetrics } from "@/components/chat/MessageMetrics";
+import { ToolInvocationView } from "@/components/chat/ToolInvocationView";
 import {
   getConversation,
   saveConversation,
@@ -54,6 +55,7 @@ function ChatInner() {
   const [showPrompt, setShowPrompt] = useState(false);
   const [input, setInput] = useState("");
   const [verbose, setVerboseState] = useState(true);
+  const [allowDestructive, setAllowDestructive] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -137,7 +139,13 @@ function ChatInner() {
     if (!txt || !model || status === "streaming") return;
     setInput("");
     if (textareaRef.current) textareaRef.current.style.height = "auto";
-    await send(txt, { model, systemPrompt });
+    await send(txt, {
+      model,
+      systemPrompt,
+      confirmDestructive: allowDestructive,
+    });
+    // Reset destructive-confirm efter brug — skal eksplicit aktiveres hver gang
+    if (allowDestructive) setAllowDestructive(false);
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -359,6 +367,23 @@ function ChatInner() {
               />
               verbose
             </label>
+
+            <label
+              className={`hidden sm:flex items-center gap-1.5 text-[11px] cursor-pointer select-none px-3 py-1.5 rounded-lg border transition-colors ${
+                allowDestructive
+                  ? "border-amber-400/50 text-amber-200 bg-amber-500/10"
+                  : "border-cyan-400/15 text-neutral-400 hover:border-amber-400/40"
+              }`}
+              title="Tillad destruktive tool-actions (stop/restart/quit) i næste besked"
+            >
+              <input
+                type="checkbox"
+                checked={allowDestructive}
+                onChange={(e) => setAllowDestructive(e.target.checked)}
+                className="accent-amber-400"
+              />
+              tillad stop/quit
+            </label>
           </div>
 
           {showPrompt && (
@@ -428,13 +453,16 @@ function ChatInner() {
                       J
                     </div>
                     <div className="flex-1 min-w-0">
+                      {m.tools && m.tools.length > 0 && (
+                        <ToolInvocationView tools={m.tools} />
+                      )}
                       {m.content ? (
                         <div className="chat-md">
                           <ReactMarkdown remarkPlugins={[remarkGfm]}>
                             {m.content}
                           </ReactMarkdown>
                         </div>
-                      ) : (
+                      ) : m.tools && m.tools.length > 0 ? null : (
                         <div className="text-cyan-400/60 text-sm">
                           <span className="inline-block w-1.5 h-4 bg-cyan-400/60 animate-pulse align-middle" />
                         </div>
