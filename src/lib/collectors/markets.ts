@@ -130,26 +130,26 @@ async function fetchCurrencies(): Promise<CurrencyRate[]> {
     GBP: "Britisk pund",
   };
 
-  return symbols
-    .map((code) => {
-      const per = nowJson.rates[code];
-      if (per == null) return null;
-      const yPer = yJson?.rates?.[code];
-      const dkkPerUnit = 1 / per;
-      const yDkkPerUnit = yPer != null ? 1 / yPer : undefined;
-      const change24h =
-        yDkkPerUnit != null
-          ? Math.round(((dkkPerUnit - yDkkPerUnit) / yDkkPerUnit) * 10000) / 100
-          : undefined;
-      return {
+  return symbols.flatMap<CurrencyRate>((code) => {
+    const per = nowJson.rates[code];
+    if (per == null) return [];
+    const yPer = yJson?.rates?.[code];
+    const dkkPerUnit = 1 / per;
+    const yDkkPerUnit = yPer != null ? 1 / yPer : undefined;
+    const change24h =
+      yDkkPerUnit != null
+        ? Math.round(((dkkPerUnit - yDkkPerUnit) / yDkkPerUnit) * 10000) / 100
+        : undefined;
+    return [
+      {
         code,
         label: labels[code] ?? code,
         perDkk: Math.round(per * 10000) / 10000,
         dkkPerUnit: Math.round(dkkPerUnit * 10000) / 10000,
         change24h,
-      } satisfies CurrencyRate;
-    })
-    .filter((x): x is CurrencyRate => x != null);
+      },
+    ];
+  });
 }
 
 export async function collect(): Promise<MarketsData> {

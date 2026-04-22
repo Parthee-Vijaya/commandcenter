@@ -64,7 +64,17 @@ export async function collect(): Promise<SystemData> {
     si.networkStats().catch(() => []),
     si.battery().catch(() => null),
     si.osInfo(),
-    si.processes().catch(() => ({ list: [], all: 0 } as si.Systeminformation.ProcessesData)),
+    si.processes().catch(
+      () =>
+        ({
+          list: [],
+          all: 0,
+          running: 0,
+          blocked: 0,
+          sleeping: 0,
+          unknown: 0,
+        }) as unknown as si.Systeminformation.ProcessesData
+    ),
     readPower(),
   ]);
 

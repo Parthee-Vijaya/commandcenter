@@ -62,7 +62,8 @@ export async function collect(): Promise<PlexData> {
     });
 
     const librariesData = await parseStringPromise(librariesXml);
-    const directories: LibrarySection["Directory"] = librariesData.MediaContainer?.Directory ?? [];
+    const directories: NonNullable<LibrarySection["Directory"]> =
+      librariesData.MediaContainer?.Directory ?? [];
     let movies = 0;
     let shows = 0;
     for (const d of directories) {
