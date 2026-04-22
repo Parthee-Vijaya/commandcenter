@@ -1,20 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeSettings } from "@/components/ThemeSettings";
-
-const geist = Geist({
-  subsets: ["latin"],
-  variable: "--font-geist",
-  display: "swap",
-});
-
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-geist-mono",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "J.A.R.V.I.S.",
@@ -34,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="da" className={`${geist.variable} ${geistMono.variable}`}>
+    <html lang="da" className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body>
         <ThemeProvider>
           {children}
