@@ -67,6 +67,23 @@ function initSchema(d: Database.Database) {
       FOREIGN KEY (automation_id) REFERENCES automations(id) ON DELETE CASCADE
     );
     CREATE INDEX IF NOT EXISTS idx_automation_runs_auto ON automation_runs(automation_id, started_at DESC);
+
+    CREATE TABLE IF NOT EXISTS delegate_tasks (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      prompt TEXT NOT NULL,
+      mode TEXT NOT NULL,              -- 'cli' | 'terminal'
+      agent TEXT,
+      effort TEXT,
+      working_dir TEXT NOT NULL,
+      status TEXT NOT NULL,            -- 'running' | 'done' | 'failed' | 'killed'
+      pid INTEGER,
+      exit_code INTEGER,
+      started_at INTEGER NOT NULL,
+      ended_at INTEGER,
+      last_message TEXT
+    );
+    CREATE INDEX IF NOT EXISTS idx_delegate_started ON delegate_tasks(started_at DESC);
   `);
 }
 
