@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 
 // ── Typer (synkront med src/lib/control/*.ts) ─────────────────────────────
@@ -151,6 +152,13 @@ export function ControlWidget() {
           <span className="text-[10px] font-mono text-neutral-500">
             {lastRefresh ? `opdateret ${new Date(lastRefresh).toLocaleTimeString("da-DK", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}` : ""}
           </span>
+          <Link
+            href="/control"
+            title="Åbn filbrowser"
+            className="text-[10px] px-1.5 py-0.5 rounded border border-cyan-400/20 text-cyan-300/80 hover:border-cyan-400/50"
+          >
+            📁
+          </Link>
           <button
             onClick={refresh}
             title="Genopfrisk"
