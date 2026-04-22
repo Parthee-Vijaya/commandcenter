@@ -161,28 +161,42 @@ export function ControlWidget() {
         </div>
       }
     >
-      {/* Tabs */}
-      <div className="flex gap-1 mb-3 text-[11px] font-mono">
-        <button
-          onClick={() => setTab("services")}
-          className={`px-3 py-1.5 rounded-md border transition-colors ${
-            tab === "services"
-              ? "bg-cyan-400/10 border-cyan-400/40 text-cyan-100"
-              : "bg-transparent border-neutral-800 text-neutral-500 hover:text-neutral-300"
-          }`}
-        >
-          Services · <span className="text-emerald-400">{runningServices}</span>/{services.length}
-        </button>
-        <button
-          onClick={() => setTab("apps")}
-          className={`px-3 py-1.5 rounded-md border transition-colors ${
-            tab === "apps"
-              ? "bg-cyan-400/10 border-cyan-400/40 text-cyan-100"
-              : "bg-transparent border-neutral-800 text-neutral-500 hover:text-neutral-300"
-          }`}
-        >
-          Apps · <span className="text-emerald-400">{runningApps}</span>/{apps.length}
-        </button>
+      {/* Tabs + summary */}
+      <div className="flex items-center justify-between gap-2 mb-3">
+        <div className="flex gap-1 text-[11px] font-mono">
+          <button
+            onClick={() => setTab("services")}
+            className={`px-3 py-1.5 rounded-md border transition-colors ${
+              tab === "services"
+                ? "bg-cyan-400/10 border-cyan-400/40 text-cyan-100"
+                : "bg-transparent border-neutral-800 text-neutral-500 hover:text-neutral-300"
+            }`}
+          >
+            Services · <span className="text-emerald-400 font-semibold">{runningServices}</span>
+            <span className="text-neutral-500">/{services.length}</span>
+          </button>
+          <button
+            onClick={() => setTab("apps")}
+            className={`px-3 py-1.5 rounded-md border transition-colors ${
+              tab === "apps"
+                ? "bg-cyan-400/10 border-cyan-400/40 text-cyan-100"
+                : "bg-transparent border-neutral-800 text-neutral-500 hover:text-neutral-300"
+            }`}
+          >
+            Apps · <span className="text-emerald-400 font-semibold">{runningApps}</span>
+            <span className="text-neutral-500">/{apps.length}</span>
+          </button>
+        </div>
+        <div className="text-[10px] font-mono text-neutral-500 flex items-center gap-2">
+          <span className="inline-flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_4px_rgba(52,211,153,0.6)]" />
+            kører
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-neutral-600" />
+            stoppet
+          </span>
+        </div>
       </div>
 
       {error && (
@@ -201,24 +215,37 @@ export function ControlWidget() {
               return (
                 <div
                   key={s.label}
-                  className="flex items-center gap-2 px-2.5 py-2 rounded-md bg-neutral-900/40 border border-transparent hover:border-cyan-400/15"
+                  className={`flex items-center gap-2 px-2.5 py-2 rounded-md border transition-colors ${
+                    s.running
+                      ? "bg-emerald-500/10 border-emerald-400/30"
+                      : s.loaded
+                      ? "bg-amber-500/5 border-amber-400/20"
+                      : "bg-neutral-900/40 border-transparent hover:border-cyan-400/15"
+                  }`}
                 >
                   <span
-                    className={`w-2 h-2 rounded-full shrink-0 ${
+                    className={`w-2.5 h-2.5 rounded-full shrink-0 ${
                       s.running
-                        ? "bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]"
+                        ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] animate-pulse"
                         : s.loaded
-                        ? "bg-amber-400"
+                        ? "bg-amber-400 shadow-[0_0_4px_rgba(251,191,36,0.5)]"
                         : "bg-neutral-600"
                     }`}
                     title={s.running ? `kører (pid ${s.pid})` : s.loaded ? "loaded" : "ikke loaded"}
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-baseline gap-2">
-                      <span className="text-sm text-neutral-100 truncate">{s.name}</span>
+                      <span className={`text-sm truncate ${s.running ? "text-emerald-50 font-medium" : "text-neutral-100"}`}>
+                        {s.name}
+                      </span>
                       {s.running && (
-                        <span className="text-[10px] font-mono text-neutral-500 shrink-0">
+                        <span className="text-[10px] font-mono text-emerald-400/80 shrink-0">
                           pid {s.pid}
+                        </span>
+                      )}
+                      {!s.running && s.loaded && (
+                        <span className="text-[10px] font-mono text-amber-400/80 shrink-0">
+                          loaded
                         </span>
                       )}
                     </div>
@@ -274,15 +301,22 @@ export function ControlWidget() {
                 key={a.name}
                 className={`group relative px-2.5 py-2 rounded-md border flex items-center gap-2 transition-colors ${
                   a.running
-                    ? "bg-emerald-500/5 border-emerald-400/25"
-                    : "bg-neutral-900/40 border-transparent hover:border-cyan-400/20"
+                    ? "bg-emerald-500/15 border-emerald-400/40 shadow-[inset_0_0_12px_rgba(52,211,153,0.08)]"
+                    : "bg-neutral-900/40 border-neutral-800/50 opacity-70 hover:opacity-100 hover:border-cyan-400/20"
                 }`}
               >
-                <span className="text-lg leading-none shrink-0">{a.icon ?? "📦"}</span>
+                <div className="relative shrink-0">
+                  <span className="text-lg leading-none">{a.icon ?? "📦"}</span>
+                  {a.running && (
+                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_4px_rgba(52,211,153,0.8)] animate-pulse" />
+                  )}
+                </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-xs text-neutral-100 truncate">{a.name}</div>
-                  <div className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">
-                    {a.running ? "kører" : a.category ?? ""}
+                  <div className={`text-xs truncate ${a.running ? "text-emerald-50 font-medium" : "text-neutral-300"}`}>
+                    {a.name}
+                  </div>
+                  <div className={`text-[9px] font-mono uppercase tracking-wider ${a.running ? "text-emerald-400" : "text-neutral-500"}`}>
+                    {a.running ? "● kører" : a.category ?? ""}
                   </div>
                 </div>
                 <div className="flex gap-1">
