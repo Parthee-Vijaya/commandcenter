@@ -110,13 +110,19 @@ if [[ -d "$JARVIS_HOME/.git" ]]; then
   cd "$JARVIS_HOME"
   git pull --ff-only || warn "Kunne ikke fast-forward — tjek lokale changes"
 else
-  # Hvis scriptet køres fra et eksisterende clone, brug det
-  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-  if [[ -f "$SCRIPT_DIR/../package.json" ]]; then
+  # Hvis scriptet køres fra et eksisterende clone, brug det.
+  # NB: ${BASH_SOURCE[0]} er tom når scriptet kører via 'curl | bash',
+  #     så vi defaulter til $0 og swallow'er fejl fra dirname/cd.
+  SCRIPT_SOURCE="${BASH_SOURCE[0]:-$0}"
+  SCRIPT_DIR=""
+  if [[ -n "$SCRIPT_SOURCE" && "$SCRIPT_SOURCE" != "bash" ]]; then
+    SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_SOURCE")" 2>/dev/null && pwd)" || SCRIPT_DIR=""
+  fi
+  if [[ -n "$SCRIPT_DIR" && -f "$SCRIPT_DIR/../package.json" ]]; then
     JARVIS_HOME="$(cd "$SCRIPT_DIR/.." && pwd)"
-    info "Bruger eksisterende clone: $JARVIS_HOME"
+    info "Bruger eksisterende clone: ${JARVIS_HOME}"
   else
-    info "Kloner $REPO_URL til $JARVIS_HOME…"
+    info "Kloner ${REPO_URL} til ${JARVIS_HOME}…"
     git clone "$REPO_URL" "$JARVIS_HOME"
   fi
 fi
