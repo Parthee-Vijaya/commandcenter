@@ -5,13 +5,16 @@ export async function register(): Promise<void> {
     { startSparklineCollector },
     { autoImportPlexToken },
     { startScheduler },
+    { startMeetingPrep },
   ] = await Promise.all([
     import("@/jobs/sparkline-collector"),
     import("@/jobs/plex-token-import"),
     import("@/jobs/scheduler"),
+    import("@/jobs/meeting-prep"),
   ]);
 
   await autoImportPlexToken();
   startSparklineCollector();
   startScheduler();
+  startMeetingPrep();
 }

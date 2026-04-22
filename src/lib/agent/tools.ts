@@ -197,6 +197,102 @@ export const TOOLS: ToolSchema[] = [
       parameters: { type: "object", properties: {} },
     },
   },
+
+  // ── Calendar (macOS Calendar.app) ───────────────────────────────────────
+  {
+    type: "function",
+    function: {
+      name: "list_calendar_events",
+      description:
+        "List kommende kalender-events fra macOS Calendar.app. Default: i dag. Brug 'hours' for at se længere ud i fremtiden.",
+      parameters: {
+        type: "object",
+        properties: {
+          hours: {
+            type: "number",
+            description: "Antal timer frem fra nu. Udelad for events i dag.",
+          },
+          calendars: {
+            type: "array",
+            items: { type: "string" },
+            description:
+              "Valgfri filter: kun disse kalendernavne (fx ['Arbejde', 'Hjem']). Udelad for alle kalendere.",
+          },
+        },
+      },
+    },
+  },
+
+  // ── Reminders (macOS Reminders.app) ─────────────────────────────────────
+  {
+    type: "function",
+    function: {
+      name: "list_reminders",
+      description:
+        "List uafsluttede påmindelser fra macOS Reminders.app. Brug 'list' for at filtrere på en bestemt liste.",
+      parameters: {
+        type: "object",
+        properties: {
+          list: {
+            type: "string",
+            description: "Valgfri liste-navn. Udelad for alle lister.",
+          },
+          includeCompleted: {
+            type: "boolean",
+            description: "Inkludér afsluttede (default: false)",
+          },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "add_reminder",
+      description:
+        "Opret en ny påmindelse i macOS Reminders.app. Brug 'dueDate' som ISO 8601-streng hvis den har en deadline.",
+      parameters: {
+        type: "object",
+        properties: {
+          title: {
+            type: "string",
+            description: "Påmindelsens titel (påkrævet)",
+          },
+          list: {
+            type: "string",
+            description: "Valgfri liste at lægge den i. Default: systemets default-liste.",
+          },
+          dueDate: {
+            type: "string",
+            description: "Valgfri deadline som ISO 8601, fx '2026-04-25T14:00:00'",
+          },
+          body: {
+            type: "string",
+            description: "Valgfri noter/body-tekst",
+          },
+        },
+        required: ["title"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "complete_reminder",
+      description:
+        "Markér en påmindelse som afsluttet. Brug id'et fra list_reminders.",
+      parameters: {
+        type: "object",
+        properties: {
+          id: {
+            type: "string",
+            description: "Påmindelsens id (fra list_reminders)",
+          },
+        },
+        required: ["id"],
+      },
+    },
+  },
 ];
 
 /** Tools hvor action er destruktiv → kræver X-Confirm: true */

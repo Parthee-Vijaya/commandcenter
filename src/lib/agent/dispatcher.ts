@@ -14,6 +14,15 @@ import { collect as collectSystem } from "@/lib/collectors/system";
 import { collect as collectDisk } from "@/lib/collectors/disk";
 import { collect as collectWeather } from "@/lib/collectors/weather";
 import { collect as collectEnergy } from "@/lib/collectors/energy";
+import {
+  listTodayEvents,
+  listUpcomingEvents,
+} from "@/lib/integrations/calendar";
+import {
+  listReminders,
+  addReminder,
+  completeReminder,
+} from "@/lib/integrations/reminders";
 import { isDestructive } from "./tools";
 
 export interface ToolCallRequest {
@@ -190,6 +199,66 @@ async function execute(
         truncated: preview.truncated,
         content: preview.content,
       };
+    }
+
+    // ── Calendar ──────────────────────────────────────────────────────────
+    case "list_calendar_events": {
+      const hours = typeof args.hours === "number" ? args.hours : undefined;
+      const calendars = Array.isArray(args.calendars)
+        ? (args.calendars as string[])
+        : undefined;
+      const events = hours
+        ? await listUpcomingEvents(hours, calendars)
+        : await listTodayEvents(calendars);
+      return {
+        events: events.map((e) => ({
+          uid: e.uid,
+          calendar: e.calendar,
+          title: e.title,
+          start: e.start,
+          end: e.end,
+          allDay: e.allDay,
+          location: e.location,
+        })),
+        count: events.length,
+      };
+    }
+
+    // ── Reminders ─────────────────────────────────────────────────────────
+    case "list_reminders": {
+      const list = typeof args.list === "string" ? args.list : undefined;
+      const includeCompleted =
+        typeof args.includeCompleted === "boolean"
+          ? args.includeCompleted
+          : false;
+      const reminders = await listReminders({ list, includeCompleted });
+      return {
+        reminders: reminders.map((r) => ({
+          id: r.id,
+          list: r.list,
+          title: r.title,
+          completed: r.completed,
+          dueDate: r.dueDate,
+          priority: r.priority,
+        })),
+        count: reminders.length,
+      };
+    }
+    case "add_reminder": {
+      const title = String(args.title ?? "");
+      if (!title) throw new Error("title mangler");
+      const res = await addReminder({
+        title,
+        list: typeof args.list === "string" ? args.list : undefined,
+        dueDate: typeof args.dueDate === "string" ? args.dueDate : undefined,
+        body: typeof args.body === "string" ? args.body : undefined,
+      });
+      return res;
+    }
+    case "complete_reminder": {
+      const id = String(args.id ?? "");
+      if (!id) throw new Error("id mangler");
+      return await completeReminder(id);
     }
 
     // ── Discovery ─────────────────────────────────────────────────────────

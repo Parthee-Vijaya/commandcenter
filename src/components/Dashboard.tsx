@@ -20,6 +20,8 @@ import { LightningWidget } from "./widgets/LightningWidget";
 import { ApodWidget } from "./widgets/ApodWidget";
 import { ChatWidget } from "./widgets/ChatWidget";
 import { ControlWidget } from "./widgets/ControlWidget";
+import { CalendarWidget } from "./widgets/CalendarWidget";
+import { RemindersWidget } from "./widgets/RemindersWidget";
 import { ClaudeHeaderStats } from "./ClaudeHeaderStats";
 import { QUOTES } from "@/lib/quotes";
 
@@ -106,6 +108,10 @@ export function Dashboard() {
         {/* Row 3 · Chat + Mission control */}
         <ChatWidget />
         <ControlWidget />
+
+        {/* Row 3b · Kalender + Påmindelser (planlægnings-par) */}
+        <CalendarWidget />
+        <RemindersWidget />
 
         {/* Row 4 · Trafik + Flights */}
         <TrafficWidget />
